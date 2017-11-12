@@ -57,9 +57,9 @@
     <!--  SECTION 0:  Abstract                      -->
 
     <abstract>
-      <t>In certain evironments, e.g. large scale virtualization, new
+      <t>In certain environments, e.g. large scale virtualisation, new
       devices are created in automated manner. Such devices typically
-      have their link layer (MAC) addresses randomized. With
+      have their link layer (MAC) addresses randomised. With
       sufficient scale the likelihood of collision is not
       acceptable. Therefore an allocation mechanism is required. This
       draft proposes an extension to DHCPv6 that allows a scalable
@@ -73,14 +73,14 @@
       <!-- 1, line 230-->
 
       <t>There are several new deployment types that deal with a large
-      number of devices that need to initialized. One of them is a
+      number of devices that need to initialised. One of them is a
       scenario where VM (virtual machines) are created on a massive
       scale. Typically the new VM instances are assigned a random link
       layer (MAC) address, but that does not scale well due to
       birthday paradox. Another use case are IOT devices. Typically
       there is no need to provide global uniqueness of MAC addresses
       for such devices. On the other hand, huge number of such devices
-      would likely exhause vendor's OUI (Organization's Unique
+      would likely exhaust vendor's OUI (Organisation's Unique
       Identifier) global address space. For those reasons, it is
       desired to have some form of local authority that would be able
       to assign MAC addresses.</t>
@@ -88,7 +88,7 @@
       <t>This document proposes a new mechanism that extends DHCPv6
       operation to handle MAC address assignments.</t>
 
-      <t>Since DHCPv6 is a protocol that can allocate variouse types
+      <t>Since DHCPv6 is a protocol that can allocate various types
       of resources (non-temporary addresses, temporary addresses,
       prefixes, but also many options) and has necessary
       infrastructure to maintain such assignment, it is a good
@@ -132,7 +132,7 @@
       with all assigned addresses listed, one option for each address)
       would not work well. Therefore the mechanism operates on MAC
       address ranges, rather than single values. This does not prevent
-      the users to treat invidivual MAC addresses as ranges with just
+      the users to treat individual MAC addresses as ranges with just
       one address.</t>
 
       <section title="Requesting addresses">
@@ -177,6 +177,11 @@
       a smaller block and add text: client MUST accept the value sent
       by client. If additional addresses are needed, send another
       request (but obey rate limiting).</t>
+
+      <t>TODO: How exactly the Use Temporary MAC address for
+      anonymity, IEEE 802.11-02/109r0 works? Can we turn this into a
+      way to "upgrade" the temporary address into permanent one? "Yes,
+      I confirm your temp address is really unique. You can keep it."</t>
       </section>
     </section>
 
@@ -257,22 +262,21 @@
 
     </section>
 
-    <section anchor="client" title="Client behavior">
+    <section anchor="client" title="Client behaviour">
       <t>TODO: We need start this section by clearly defining what
       'client' means in this context (either hypervisor acting on
       behalf of the client to be spawned or the IOT device acting on
       its own behalf).</t>
     </section>
 
-    <section anchor="server" title="Server behavior">
+    <section anchor="server" title="Server behaviour">
       <t>TODO: Need to describe server operation. </t>
     </section>
 
     <section anchor="iana" title="IANA Considerations">
       <t>IANA is kindly requested to assign new value for option
       OPTION_LLADDR (tbd1) and insert its value into the DHCPv6 Option codes
-      registry maintainted at http://www.iana.org/assignments/
-      dhcpv6-parameters.</t>
+      registry maintainted at http://www.iana.org/assignments/dhcpv6-parameters.</t>
     </section>
 
     <section anchor="security" title="Security Considerations">
@@ -280,7 +284,7 @@
     </section>
 
     <section anchor="privacy" title="Privacy Considerations">
-      <t>TODO:</t>
+      <t>TODO: </t>
     </section>
 
   </middle>
@@ -289,9 +293,7 @@
     <references title="Normative References">
 
       <?rfc include='reference.RFC.2119'?>
-
       <?rfc include='reference.RFC.3315'?>
-
       <?rfc include='reference.RFC.8174'?>
     </references>
 

@@ -42,7 +42,7 @@
       </address>
     </author>
 
-    <date />
+    <date year="2017"/>
 
     <area>Internet</area>
 
@@ -96,14 +96,15 @@
     </section>
 
     <section anchor="requirements" title="Requirements">
-      <!-- TODO: upgrade to RFC XXXX -->
-      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this
-      document are to be interpreted as described in <xref target="RFC2119"/> when they
-      appear in ALL CAPS.  When these words are not in ALL CAPS (such as
-      "should" or "Should"), they have their usual English meanings, and
-      are not to be interpreted as <xref target="RFC2119"/> key words.</t>
-    </section>    
+      <t>
+      The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+      NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+      "MAY", and "OPTIONAL" in this document are to be interpreted as
+      described in BCP 14 <xref target="RFC2119"/> <xref
+      target="RFC8174" /> when, and only when, they
+      appear in all capitals, as shown here.</t>
+
+    </section>
 
     <section anchor="overview" title="Mechanism overview">
 
@@ -115,21 +116,68 @@
       anonymity, IEEE 802.11-02/109r0) (can this be used in other
       networks than 802.11?)</t>
 
-      <t>TODO: How client can signal that X addresses are needed?</t>
+      <t>One of the essential aspects of this mechanism is its
+      cumulative nature, especially in the hypervisor scenario. The
+      server-client relationship does not look like other DHCP
+      transactions. This is especially true in hypervisor scenario. In
+      typical environment there would be one server and rather small
+      number of hypervisors, possibly even only one. However, over
+      time the number of MAC addresses requested by a client will
+      likely increase over time as new VMs are spawned.</t>
 
+      <t>Another aspect crucial for efficient design is the
+      observation that a single client acting as hypervisor will
+      likely use thousands of addresses. Therefore an approach similar
+      to what is used for address or prefix assignment (IA container
+      with all assigned addresses listed, one option for each address)
+      would not work well. Therefore the mechanism operates on MAC
+      address ranges, rather than single values. This does not prevent
+      the users to treat invidivual MAC addresses as ranges with just
+      one address.</t>
+
+      <section title="Requesting addresses">
+        <t>Client sends the requested link-layer address in its packet
+        as a hint. Several cases can be considered here. First, if the
+        client doesn't have any previous link-layer addresses assigned
+        and doesn't have any specific preferences, it can request any
+        address, that is represented as values consisting of only
+        zeroes.
+        </t>
+
+        <t>Client can represent a block of addresses, starting with
+        the specified address and followed by a number of addresses
+        indicated by extra-addresses field. If that field value is 0,
+        then exactly one address is requested.</t>
+
+        <t>Client can request a block of addresses, without specifying
+        any particular preferences regarding starting address. This
+        can be achieved using link-layer address consisting of all
+        zeroes and extra-addresses field specifying the number of
+        requested addresses decreased by one.</t>
+      </section>
+
+      <section title="Renewing and releasing addresses">
       <t>TODO: How client renews/releases? Make sure that the whole
       block is always renewed/released. Further fragments are not
       allowed.</t>
 
-      <t>TODO: What the server should do if client asks for X
-      addresses, but for whatever reason (running out or policy), the
-      server is only able to assign Y.</t>
-
-      <t>TODO:  The hypervisor
+      <t>TODO:  The growth in hypervisor case. The hypervisor client
       will start with certain number of MAC addresses and then will
-      keep asking for more over time. We either need IA_ID to identify
-      separate blocks or some way of compacting existing ranges into
-      bigger ones if they's continuous.</t>
+      keep asking for more over time. If we go with IAID approach, the
+      client will be sending more and more options over time until MTU
+      limit is hit. If we decide to go with a single container and
+      multiple range options in it, we'll need some sort of compacting
+      algorithm.</t>
+      </section>
+
+      <section title="Other questions">
+      <t>TODO: What should the server do if client asks for X
+      addresses, but for whatever reason (limited resources or policy), the
+      server is only able to assign Y? Proposed answer: respond with
+      a smaller block and add text: client MUST accept the value sent
+      by client. If additional addresses are needed, send another
+      request (but obey rate limiting).</t>
+      </section>
     </section>
 
     <section anchor="option" title="Option definitions">
@@ -137,10 +185,76 @@
       <t>TODO: Need to define option formats here. There are 3
       possible approaches. 1) a single MAC address (which isn't
       flexible and would raise the same objections people now have for
-      IA_NA) 2) min-max (which seems the most flexible) and 3) do
+      IA_NA) 2) min-max (which seems the most flexible, but has
+      unneeded overheard if client requests a signle MAC; 3) do
       assignments with bit lengths, similar to IA_PD (this wouldn't
       work too well, because the address space for a single OUI is
-      only 24 bits).</t>
+      only 24 bits) and finally 4) define first address + number of
+      addresses (which can be zero if only one address is
+      needed). This approach has been defined below.</t>
+
+        <figure align="center" anchor="syntax"
+                title="Option Syntax">
+          <preamble></preamble>
+
+          <artwork align="left"><![CDATA[
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|          OPTION_LLADDR        |          option-len           |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        IAID (4 octets)                        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|       link-layer-type         |        link-layer-len         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                                                               |
+|                      link-layer-address                       |
+|                                                               |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                         extra-addresses                       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                        valid-lifetime                         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+.                                                               .
+.                        LLADDR-options                         .
+.                                                               .
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+]]></artwork>
+          <postamble></postamble>
+        </figure>
+
+        <t><list hangIndent="16" style="hanging">
+            <t hangText="option-code">OPTION_LLADDR (tbd1).</t>
+
+            <t hangText="option-len">16 + link layer length
+            (typically 6) + any LLADDR options. Assuming a typical
+            link-layer address of 6 is used and there are no extra
+            options, length should be equal to 22.</t>
+
+            <t hangText="iaid">Numeric identifier for this specific
+            identity association.</t>
+
+            <t hangText="link-layer-type">..</t>
+            <t hangText="link-layer-len">specifies length of the
+            link-layer address (typically 6)</t>
+            <t hangText="link-layer-address">Specific value of
+            link-layer address that is being requested. A special case
+            of address consisting of only zeroes means any
+            address. This value can be only sent by a client that
+            requests a new block.</t>
+            <t hangText="extra-addresses">Number of additional
+            addresses that follow address specified in
+            link-layer-address. For requesting a single address, use
+            0. For example: link-layer-address: 02:04:06:08:0a and
+            extra-addresses 3 designates a block of 4 addresses,
+            starting from 02:04:06:08:0a (inclusive) and ending with
+            02:04:06:08:0d (inclusive).</t>
+            <t hangText="valid-lifetime">expressed in seconds</t>
+            <t hangText="LLADDR-options">any encapsulated options that
+            are specific to this particular LLBLOCK. Currently there
+            are no such options defined, but they may appear in the future.</t>
+          </list></t>
+
+
     </section>
 
     <section anchor="client" title="Client behavior">
@@ -154,13 +268,21 @@
       <t>TODO: Need to describe server operation. </t>
     </section>
 
+    <section anchor="iana" title="IANA Considerations">
+      <t>IANA is kindly requested to assign new value for option
+      OPTION_LLADDR (tbd1) and insert its value into the DHCPv6 Option codes
+      registry maintainted at http://www.iana.org/assignments/
+      dhcpv6-parameters.</t>
+    </section>
+
     <section anchor="security" title="Security Considerations">
-    </section>    
+      <t>TODO:</t>
+    </section>
 
     <section anchor="privacy" title="Privacy Considerations">
-    </section>    
-    
-    <!-- ends: "25 from line 4764-->
+      <t>TODO:</t>
+    </section>
+
   </middle>
 
   <back>
@@ -170,6 +292,7 @@
 
       <?rfc include='reference.RFC.3315'?>
 
+      <?rfc include='reference.RFC.8174'?>
     </references>
 
     <references title="Informative References">
@@ -193,4 +316,3 @@
 
   </back>
 </rfc>
-

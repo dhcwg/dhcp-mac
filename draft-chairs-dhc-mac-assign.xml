@@ -198,8 +198,50 @@
       addresses (which can be zero if only one address is
       needed). This approach has been defined below.</t>
 
-        <figure align="center" anchor="syntax"
-                title="Option Syntax">
+
+      <figure align="center" anchor="ia-ll-syntax"
+              title="IA_LL Option Syntax">
+        <artwork align="left"><![CDATA[
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |          OPTION_IA_LL         |          option-len           |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                        iaid (4 octets)                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          t1 (4 octets)                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          t2 (4 octets)                        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   .                                                               .
+   .                         IA_LL-options                         .
+   .                                                               .
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   ]]></artwork>
+        <postamble></postamble>
+      </figure>
+
+        <t>
+          <list hangIndent="16" style="hanging">
+            <t hangText="option-code">OPTION_IA_LL (tbd1).</t>
+
+            <t hangText="option-len">12 + size of any encapsulated
+            options.</t>
+
+            <t hangText="iaid">Identity Association for Link-Layer</t>
+
+            <t hangText="t1">Renewal timer</t>
+
+            <t hangText="t2">Rebind timer</t>
+
+            <t hangText="IA_LL-options">any encapsulated options that
+            are specific to this particular IA_LL container. Currently there
+            is only one option type defined (LLADDR), but additional
+            types may be defined in the future.</t>
+          </list>
+        </t>
+
+
+        <figure align="center" anchor="lladdr-syntax"
+                title="LLADDR Option Syntax">
           <preamble></preamble>
 
           <artwork align="left"><![CDATA[
@@ -208,44 +250,43 @@
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |          OPTION_LLADDR        |          option-len           |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        IAID (4 octets)                        |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |       link-layer-type         |        link-layer-len         |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |                                                               |
-|                      link-layer-address                       |
+|                     link-layer-address                        |
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         extra-addresses                       |
+|                      extra-addresses                          |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                        valid-lifetime                         |
+|                      valid-lifetime                           |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 .                                                               .
-.                        LLADDR-options                         .
+.                      LLADDR-options                           .
 .                                                               .
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+]]></artwork>
           <postamble></postamble>
         </figure>
 
-        <t><list hangIndent="16" style="hanging">
-            <t hangText="option-code">OPTION_LLADDR (tbd1).</t>
+        <t>
+          <list hangIndent="16" style="hanging">
+            <t hangText="option-code">OPTION_LLADDR (tbd2).</t>
 
             <t hangText="option-len">16 + link layer length
             (typically 6) + any LLADDR options. Assuming a typical
             link-layer address of 6 is used and there are no extra
             options, length should be equal to 22.</t>
 
-            <t hangText="iaid">Numeric identifier for this specific
-            identity association.</t>
-
             <t hangText="link-layer-type">..</t>
+
             <t hangText="link-layer-len">specifies length of the
             link-layer address (typically 6)</t>
+
             <t hangText="link-layer-address">Specific value of
             link-layer address that is being requested. A special case
             of address consisting of only zeroes means any
             address. This value can be only sent by a client that
             requests a new block.</t>
+
             <t hangText="extra-addresses">Number of additional
             addresses that follow address specified in
             link-layer-address. For requesting a single address, use
@@ -253,12 +294,14 @@
             extra-addresses 3 designates a block of 4 addresses,
             starting from 02:04:06:08:0a (inclusive) and ending with
             02:04:06:08:0d (inclusive).</t>
+
             <t hangText="valid-lifetime">expressed in seconds</t>
+
             <t hangText="LLADDR-options">any encapsulated options that
             are specific to this particular LLBLOCK. Currently there
             are no such options defined, but they may appear in the future.</t>
-          </list></t>
-
+          </list>
+        </t>
 
     </section>
 
@@ -274,9 +317,10 @@
     </section>
 
     <section anchor="iana" title="IANA Considerations">
-      <t>IANA is kindly requested to assign new value for option
-      OPTION_LLADDR (tbd1) and insert its value into the DHCPv6 Option codes
-      registry maintainted at http://www.iana.org/assignments/dhcpv6-parameters.</t>
+      <t>IANA is kindly requested to assign new value for options
+      OPTION_LL (tbd1) and OPTION_LLADDR (tbd2) and add those values
+      to the DHCPv6 Option Codes registry maintainted at
+      http://www.iana.org/assignments/dhcpv6-parameters.</t>
     </section>
 
     <section anchor="security" title="Security Considerations">

@@ -80,7 +80,7 @@
       birthday paradox. Another use case are IOT devices. Typically
       there is no need to provide global uniqueness of MAC addresses
       for such devices. On the other hand, huge number of such devices
-      would likely exhaust vendor's OUI (Organisation's Unique
+      would likely exhaust a vendor's OUI (Organisation's Unique
       Identifier) global address space. For those reasons, it is
       desired to have some form of local authority that would be able
       to assign MAC addresses.</t>
@@ -99,7 +99,8 @@
       <t>This document proposes a new mechanism that extends DHCPv6
       operation to handle MAC address assignments.</t>
 
-      <t>Since DHCPv6 is a protocol that can allocate various types
+      <t>Since DHCPv6 (<xref target="RFC3315"/>) is a protocol that can
+      allocate various types
       of resources (non-temporary addresses, temporary addresses,
       prefixes, but also many options) and has necessary
       infrastructure to maintain such assignment, it is a good
@@ -354,7 +355,8 @@
 
     <references title="Informative References">
 
-       <reference anchor="IANA-RESERVED-IID">
+      <?rfc include='reference.RFC.2464'?>
+      <reference anchor="IANA-RESERVED-IID">
         <front>
           <title>
               Reserved IPv6 Interface Identifiers
@@ -403,8 +405,44 @@
 
           <postamble></postamble>
         </figure>
-          
-        <t>TODO MORE:</t>
+         
+      <t>The SLAP quardants are:</t>
+      
+<texttable title="SLAP Quadrants">
+<ttcol align='right'>Quadrant</ttcol>
+<ttcol align='left'>Y-bit</ttcol>
+<ttcol align='left'>Z-bit</ttcol>
+<ttcol align='left'>Local Identifier Type</ttcol>
+<ttcol align='left'>Local Identifier</ttcol>
+     <c>01</c><c>0</c><c>1</c><c>Extended Local</c><c>ELI</c>
+     <c>11</c><c>1</c><c>1</c><c>Standard Assigned</c><c>SAI</c>
+     <c>00</c><c>0</c><c>0</c><c>Administratively Assigned</c><c>AAI</c>
+     <c>10</c><c>1</c><c>0</c><c>Reserved</c><c>Reserved</c>
+</texttable>
+
+      <t>Extended Local Identifier (ELI) derived MAC addresses are based on an
+      assigned Company ID (CID), which is 24-bits (including the M, X, Y, and
+      Z bits) for 48-bit MAC addresses. This leaves 24-bits for the locally
+      assigned address for each CID for unicast (M-bit = 0) and also for
+      multicast (M-bit = 1). The CID is assigned by the IEEE RA.</t>
+      
+      <t>Standard Assigned Identifier (SAI) derived MAC addresses are
+      assigned by a protocol specified in an IEEE 802 standard. For
+      48-bit MAC addresses, 44 bits are available. Multiple protocols
+      for assigning SAIs may be specified in IEEE standards. Coexistance of
+      multiple protocols may be supported by limiting the subspace available
+      for assignment by each protocol.</t>
+       
+      <t>Adminstratively Assigned Identifier (AAI) derived MAC addresses are
+      assigned locally. Administrators manage the space as needed. Note that
+      multicast IPv6 packets (<xref target="RFC2464"/>) use a destination address
+      starting in 33-33 and this falls within this space and therefore should
+      not be used to avoid conflict with IPv6 multicast addresses. For
+      48-bit MAC addresses, 44 bits are available.</t>
+            
+      <t>The last quandrant is reserved for future use. While they may be used
+      for AAI space, administrators should be aware that future specifications
+      may define alternate uses that could be incompatible.</t>
            
     </section>
 

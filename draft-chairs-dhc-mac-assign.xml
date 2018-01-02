@@ -42,7 +42,7 @@
       </address>
     </author>
 
-    <date year="2017"/>
+    <date year="2018"/>
 
     <area>Internet</area>
 
@@ -84,6 +84,17 @@
       Identifier) global address space. For those reasons, it is
       desired to have some form of local authority that would be able
       to assign MAC addresses.</t>
+         
+      <t>The IEEE originally set aside half of the 48-bit MAC Address
+      space for local use (where the U/L bit is set to 1). In 2017, the
+      IEEE specified an optional specification (IEEE 802c) that divides
+      this space into quadrants (Standards Assigned Identifier, Extended
+      Local Identifier, Administratively Assigned Identifier, and a
+      Reserved quadrant) - more details are in <xref
+      target="IEEE802cSummary"/>. The IEEE is also
+      working to specify protocols and procedures for assignment of
+      locally unique addresses (IEEE 802.1cq). This work may serve
+      as one such protocol for assignment.</t>
 
       <t>This document proposes a new mechanism that extends DHCPv6
       operation to handle MAC address assignments.</t>
@@ -359,6 +370,43 @@
       </reference>
 
     </references>
+       
+    <section anchor="IEEE802cSummary" title="IEEE 802c Summary">
+         
+      <t>This appendix provides a brief summary of IEEE802c from IEEE Std 802c-2017.</t>  
+         
+      <t>The original IEEE 802 specifications assigned half of the 48-bit MAC address
+      space to local use -- these addresses have the U/L bit set to 1 and are locally
+      administered with no imposed structure.</t>
+           
+      <t>In 2017, the IEEE issued the 802c specification which defines a new "optional
+      Structured Local Address Plan (SLAP) that specifies different assignment
+      approaches in four specified regions of the local MAC address space." Under this
+      plan, there are 4 SLAP quadrants that use different assignment policies.</t>
+           
+      <t>The first octet of the MAC address Z and Y bits define the quadrant. In IEEE
+      representation, these bits are as follows:</t>
+           
+      <figure align="center" anchor="SLAP-Bits"
+                title="SLAP Bits">
+          <preamble></preamble>
+           
+          <artwork align="left"><![CDATA[
+    LSB                MSB
+    M  X  Y  Z  -  -  -  -  
+    |  |  |  |
+    |  |  |  +------------ SLAP Z-bit
+    |  |  +--------------- SLAP M-bit
+    |  +------------------ X-bit (U/L) = 1 for locally assigned
+    +--------------------- M-bit (I/G) (unicast/group)
+           ]]></artwork>
+
+          <postamble></postamble>
+        </figure>
+          
+        <t>TODO MORE:</t>
+           
+    </section>
 
   </back>
 </rfc>

@@ -212,6 +212,8 @@
       addresses (which can be zero if only one address is
       needed). This approach has been defined below.</t>
 
+      <section anchor="IA_LL"
+               title="Identity Association for Link-Layer Addresses Option">
 
       <figure align="center" anchor="ia-ll-syntax"
               title="IA_LL Option Syntax">
@@ -237,22 +239,40 @@
           <list hangIndent="16" style="hanging">
             <t hangText="option-code">OPTION_IA_LL (tbd1).</t>
 
-            <t hangText="option-len">12 + size of any encapsulated
-            options.</t>
+            <t hangText="option-len">12 + length of IA_LL-options field.</t>
 
-            <t hangText="iaid">Identity Association for Link-Layer</t>
+            <t hangText="iaid">The unique identifier for this IA_LL; the
+                           IAID must be unique among the identifiers for
+                           all of this client's IA_LLs.  The number
+                           space for IA_LL IAIDs is separate from the
+                           number space for other IA option types (i.e.,
+                           IA_NA, IA_TA, and IA_PD). A four octets long field.</t>
 
-            <t hangText="t1">Renewal timer</t>
+            <t hangText="t1">The time at which the client should contact
+                           the server from which the addresses in the
+                           IA_LL were obtained to extend the lifetimes
+                           of the addresses assigned to the IA_LL; T1 is
+                           a time duration relative to the current time
+                           expressed in units of seconds.  A four octets
+                           long field.</t>
 
-            <t hangText="t2">Rebind timer</t>
+            <t hangText="t2">The time at which the client should contact
+                           any available server to extend the lifetimes
+                           of the addresses assigned to the IA_LL; T2 is
+                           a time duration relative to the current time
+                           expressed in units of seconds. A four octets
+                           long field.</t>
 
-            <t hangText="IA_LL-options">any encapsulated options that
-            are specific to this particular IA_LL container. Currently there
-            is only one option type defined (LLADDR), but additional
-            types may be defined in the future.</t>
+            <t hangText="IA_LL-options">Options associated with this IA_LL.
+                           A variable length field (12 octets less than
+                           the value in the option-len field).</t>
           </list>
         </t>
 
+      </section>
+      
+      <section anchor="LLADDR"
+               title="Link Layer Addresses Option">
 
         <figure align="center" anchor="lladdr-syntax"
                 title="LLADDR Option Syntax">
@@ -285,21 +305,26 @@
           <list hangIndent="16" style="hanging">
             <t hangText="option-code">OPTION_LLADDR (tbd2).</t>
 
-            <t hangText="option-len">16 + link layer length
+            <t hangText="option-len">12 + link layer length
             (typically 6) + any LLADDR options. Assuming a typical
             link-layer address of 6 is used and there are no extra
-            options, length should be equal to 22.</t>
+            options, length should be equal to 18.</t>
 
-            <t hangText="link-layer-type">..</t>
+            <t hangText="link-layer-type">The link-layer type MUST be a
+            valid hardware type assigned by the IANA, as described in
+            <xref target="RFC5494"/>. The type is stored in network
+            byte order.</t>
 
-            <t hangText="link-layer-len">specifies length of the
-            link-layer address (typically 6)</t>
+            <t hangText="link-layer-len">Specifies the length of the
+            link-layer-address field (typically 6, for a link-layer-type
+            of 1 (Ethernet)). A two octets long field.</t>
 
             <t hangText="link-layer-address">Specific value of
             link-layer address that is being requested. A special case
             of address consisting of only zeroes means any
             address. This value can be only sent by a client that
-            requests a new block.</t>
+            requests a new block. In responses from a server, this
+            value specifies the first address allocated.</t>
 
             <t hangText="extra-addresses">Number of additional
             addresses that follow address specified in
@@ -307,15 +332,21 @@
             0. For example: link-layer-address: 02:04:06:08:0a and
             extra-addresses 3 designates a block of 4 addresses,
             starting from 02:04:06:08:0a (inclusive) and ending with
-            02:04:06:08:0d (inclusive).</t>
+            02:04:06:08:0d (inclusive). In responses from a server,
+            this value specifies the number of additional addresses
+            allocated. A four octets long field.</t>
 
-            <t hangText="valid-lifetime">expressed in seconds</t>
+            <t hangText="valid-lifetime">The valid lifetime for the
+            address(es) in the option, expressed in units of seconds.
+            A four octets long field.</t>
 
             <t hangText="LLADDR-options">any encapsulated options that
             are specific to this particular LLBLOCK. Currently there
             are no such options defined, but they may appear in the future.</t>
           </list>
         </t>
+        
+      </section>
 
     </section>
 
@@ -360,6 +391,8 @@
     <references title="Informative References">
 
       <?rfc include='reference.RFC.2464'?>
+      <?rfc include='reference.RFC.5494'?>
+
       <reference anchor="IEEE-802-Tutorial">
         <front>
           <title>

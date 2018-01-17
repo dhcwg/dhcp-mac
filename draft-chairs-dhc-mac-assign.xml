@@ -128,7 +128,10 @@
       2) cover how DHCP (or IP packets in general) are sent without
       having stable MAC address. Use Temporary MAC address for
       anonymity, IEEE 802.11-02/109r0) (can this be used in other
-      networks than 802.11?)</t>
+      networks than 802.11?) See
+      https://mentor.ieee.org/802.11/dcn/02/11-02-0109-00-000i-temporary-mac-address-for-anonymity.ppt.
+      Seems unlikely to be useable without AP as proposed as
+      AP checks uniqueness of MAC address.</t>
 
       <t>One of the essential aspects of this mechanism is its
       cumulative nature, especially in the hypervisor scenario. The

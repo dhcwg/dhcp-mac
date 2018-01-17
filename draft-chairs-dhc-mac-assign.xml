@@ -7,11 +7,10 @@
 <?rfc sortrefs="yes" ?>
 <?rfc compact="yes" ?>
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-chairs-dhc-mac-assign-00"
-     ipr="pre5378Trust200902">
+<rfc category="std" docName="draft-bvtm-dhc-mac-assign-00">
   <front>
-    <title abbrev="MAC address assignment in DHCPv6">Link Layer
-    Addresses Assignment Mechanism for DHCPv6</title>
+    <title abbrev="MAC address assignment in DHCPv6">
+    Link Layer Addresses Assignment Mechanism for DHCPv6</title>
 
     <author fullname="Bernie Volz" initials="B" surname="Volz">
       <organization abbrev="Cisco">Cisco Systems, Inc.</organization>
@@ -94,7 +93,8 @@
       target="IEEE802cSummary"/>. The IEEE is also
       working to specify protocols and procedures for assignment of
       locally unique addresses (IEEE 802.1cq). This work may serve
-      as one such protocol for assignment.</t>
+      as one such protocol for assignment. For additional background,
+      see <xref target="IEEE-802-Tutorial"/>.</t>
 
       <t>This document proposes a new mechanism that extends DHCPv6
       operation to handle MAC address assignments.</t>
@@ -122,7 +122,9 @@
 
       <t>TODO: Describe two use cases: 1) Hypervisor that requests MAC
       address(es) on behalf of the VM to be spawned 2) a new IOT
-      device booting up requesting its own MAC address. For scenario
+      device booting up requesting its own MAC address. Might we want
+      section(s) similar to how 3315bis section 6 describes current
+      DHCPv6 Operational Models? For scenario
       2) cover how DHCP (or IP packets in general) are sent without
       having stable MAC address. Use Temporary MAC address for
       anonymity, IEEE 802.11-02/109r0) (can this be used in other
@@ -325,7 +327,9 @@
     </section>
 
     <section anchor="server" title="Server behaviour">
-      <t>TODO: Need to describe server operation. </t>
+      <t>TODO: Need to describe server operation. Likely also recommend
+      assigning MAC addresses from an appropriate quandrant (see
+      Appendix).</t>
     </section>
 
     <section anchor="iana" title="IANA Considerations">
@@ -356,26 +360,40 @@
     <references title="Informative References">
 
       <?rfc include='reference.RFC.2464'?>
-      <reference anchor="IANA-RESERVED-IID">
+      <reference anchor="IEEE-802-Tutorial">
         <front>
           <title>
-              Reserved IPv6 Interface Identifiers
-              http://www.iana.org/assignments/ipv6-interface-ids/ipv6-interface-ids.xml
+              Emerging IEEE 802 Work on MAC Addressing,
+              https://datatracker.ietf.org/meeting/96/materials/slides-96-edu-ieee802work-0/
               </title>
 
-          <author>
-            <organization>IANA</organization>
-          </author>
+          <author fullname="Pat Thaler" initials="P" surname="Thaler"/>
 
           <date />
         </front>
       </reference>
+         
+      <reference anchor="IEEEStd802c-2017">
+        <front>
+          <title>
+              IEEE Standard for Local and Metropolitan Area Networks: Overview and Architecture,
+              Amendment 2: Local Medium Access Control (MAC) Address Usage, IEEE Std 802c-2017
+              </title>
+
+          <author>
+            <organization>IEEE Computer Society</organization>
+          </author>
+
+          <date />
+        </front>
+      </reference>         
 
     </references>
        
     <section anchor="IEEE802cSummary" title="IEEE 802c Summary">
          
-      <t>This appendix provides a brief summary of IEEE802c from IEEE Std 802c-2017.</t>  
+      <t>This appendix provides a brief summary of IEEE802c from
+           <xref target="IEEEStd802c-2017"/>.</t>  
          
       <t>The original IEEE 802 specifications assigned half of the 48-bit MAC address
       space to local use -- these addresses have the U/L bit set to 1 and are locally

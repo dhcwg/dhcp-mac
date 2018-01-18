@@ -452,7 +452,7 @@
     M  X  Y  Z  -  -  -  -  
     |  |  |  |
     |  |  |  +------------ SLAP Z-bit
-    |  |  +--------------- SLAP M-bit
+    |  |  +--------------- SLAP Y-bit
     |  +------------------ X-bit (U/L) = 1 for locally assigned
     +--------------------- M-bit (I/G) (unicast/group)
            ]]></artwork>

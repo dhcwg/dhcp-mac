@@ -56,13 +56,13 @@
     <!--  SECTION 0:  Abstract                      -->
 
     <abstract>
-      <t>In certain environments, e.g. large scale virtualisation, new
-      devices are created in automated manner. Such devices typically
-      have their link layer (MAC) addresses randomised. With
-      sufficient scale the likelihood of collision is not
-      acceptable. Therefore an allocation mechanism is required. This
-      draft proposes an extension to DHCPv6 that allows a scalable
-      approach to link layer address assignments.</t>
+      <t>In certain environments, e.g. large scale virtualisation
+      deployments, new devices are created in automated manner. Such
+      devices typically have their link layer (MAC) addresses
+      randomised. With sufficient scale the likelihood of collision is
+      not acceptable. Therefore an allocation mechanism is
+      required. This draft proposes an extension to DHCPv6 that allows
+      a scalable approach to link layer address assignments.</t>
 
     </abstract>
   </front>
@@ -104,7 +104,7 @@
       of resources (non-temporary addresses, temporary addresses,
       prefixes, but also many options) and has necessary
       infrastructure to maintain such assignment, it is a good
-      candidate for requested functionality.</t>
+      candidate for the desired functionality.</t>
     </section>
 
     <section anchor="requirements" title="Requirements">
@@ -120,18 +120,66 @@
 
     <section anchor="overview" title="Mechanism overview">
 
-      <t>TODO: Describe two use cases: 1) Hypervisor that requests MAC
-      address(es) on behalf of the VM to be spawned 2) a new IOT
-      device booting up requesting its own MAC address. Might we want
-      section(s) similar to how 3315bis section 6 describes current
-      DHCPv6 Operational Models? For scenario
-      2) cover how DHCP (or IP packets in general) are sent without
-      having stable MAC address. Use Temporary MAC address for
-      anonymity, IEEE 802.11-02/109r0) (can this be used in other
-      networks than 802.11?) See
-      https://mentor.ieee.org/802.11/dcn/02/11-02-0109-00-000i-temporary-mac-address-for-anonymity.ppt.
-      Seems unlikely to be useable without AP as proposed as
-      AP checks uniqueness of MAC address.</t>
+      <t>This mechanism is designed to be generic and usable in many
+      deployments, but there are two scenarios it attempts to address
+      in particular. The first one pertains to large scale
+      virtualization. In such environments the governing entity
+      often called hypervisor is frequently required to spawn
+      new VMs (virtual machines). The hypervisor needs to assign
+      new MAC addresses to those machines. It acts as a DHCP client
+      and requests available DHCP servers to assign one or more MAC
+      addresses (an address range). Hypervisor does not use those
+      addresses by itself, but rather uses them to create new VMs with
+      appropriate MAC addresses. It is worth pointing out a cumulative
+      nature of scenario. Over time hypervisor is likely to increase
+      its MAC addresses usage. While some obsolete VMs will be
+      deleted and their MAC addresses will become eligible for
+      release, it is unexpected for all MAC addresses to be ever
+      released.</t>
+
+      <t>Another usage scenario is related to IOT (Internet of
+      Things). With emergence of IOT solution a new class of cheap,
+      sometimes short lived and disposable devices has
+      emerged. Examples may include various sensors (e.g. medical) and
+      actuators or controllable LED lights. Upon first boot, the
+      device uses temporary MAC address, as described in
+      <xref target="IEEEStd802c-2017"/>, to send initial DHCP packets to
+      available DHCP servers. Such devices will typically request
+      a single MAC address for each available network interface,
+      which typically mean one MAC address per device. Once the server
+      assigns a MAC address, the device abandons its temporary MAC
+      address.</t>
+
+      <t>In all scenarios the protocol operates in fundamentally the
+      same way. The device requesting an address, acting as a DHCP
+      client, will send Solicit message with IA_LL option to all
+      available DHCP servers. Each server available will send an
+      Advertise message with offered MAC address or addresses. The
+      client will then pick the best server, as governed by
+      <xref="RFC3315"/>, and will send Request message to that server.
+      The server will then assign the MAC addresses and send a Reply
+      message. Upon recection, the client can start using those MAC
+      addresses.</t>
+
+      <t>Normal DHCP mechanisms are in use. The client is expected
+      to periodically renew the MAC addresses as governed by T1 and T2
+      timers. This mechanism can be administratively disabled by
+      setting T1 and T2 to infinite values.</t>
+
+      <t>The client can release MAC addresses when they are no longer
+      needed by sending a Release message.</t>
+
+      <t>Confirm, Decline, Reconfigure and Information-Request
+      messages are not used in MAC address assignment.</t>
+
+      <!-- Q: Perhaps we could always use rapid-commit here? -->
+
+      <t>DISCUSSION: Even though in scenarios with thousands of
+      devices in place the birthday paradox dictates the collisions
+      are likely, the short window of opportunity for the collision to
+      actually occur alleviates the problem to a large degree.</t>
+
+      <section title="Design assumptions">
 
       <t>One of the essential aspects of this mechanism is its
       cumulative nature, especially in the hypervisor scenario. The
@@ -140,17 +188,18 @@
       typical environment there would be one server and rather small
       number of hypervisors, possibly even only one. However, over
       time the number of MAC addresses requested by a client will
-      likely increase over time as new VMs are spawned.</t>
+      likely increase over time as new VMs are spawned.</t> -->
 
       <t>Another aspect crucial for efficient design is the
       observation that a single client acting as hypervisor will
       likely use thousands of addresses. Therefore an approach similar
       to what is used for address or prefix assignment (IA container
       with all assigned addresses listed, one option for each address)
-      would not work well. Therefore the mechanism operates on MAC
+      would not work well. Therefore the mechanism should operate on MAC
       address ranges, rather than single values. This does not prevent
       the users to treat individual MAC addresses as ranges with just
       one address.</t>
+      </section>
 
       <section title="Requesting addresses">
         <t>Client sends the requested link-layer address in its packet
@@ -406,6 +455,19 @@
           <author fullname="Pat Thaler" initials="P" surname="Thaler"/>
 
           <date />
+        </front>
+      </reference>
+
+      <reference anchor="IEEE-802.11-02/109r0">
+        <front>
+          <title>Temporary MAC address for anonymity,
+          https://mentor.ieee.org/802.11/dcn/02/11-02-0109-00-000i-temporary-mac-address-for-anonymity.ppt</title>
+          <author fullname="Jon Edney" initials="J." surname="Edney" />
+          <author fullname="Henry Haverinen" initials="H." surname="Haverinen" />
+          <author fullname="J-P" initials="J-P." surname="Honkanen" />
+          <author fullname="Pekko" initials="P." surname="Orava" />
+          <format type="TXT"
+                  target="https://mentor.ieee.org/802.11/dcn/02/11-02-0109-00-000i-temporary-mac-address-for-anonymity.ppt" />
         </front>
       </reference>
          

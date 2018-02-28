@@ -253,16 +253,12 @@
 
     <section anchor="option" title="Option definitions">
 
-      <t>TODO: Need to define option formats here. There are 3
-      possible approaches. 1) a single MAC address (which isn't
-      flexible and would raise the same objections people now have for
-      IA_NA) 2) min-max (which seems the most flexible, but has
-      unneeded overheard if client requests a signle MAC; 3) do
-      assignments with bit lengths, similar to IA_PD (this wouldn't
-      work too well, because the address space for a single OUI is
-      only 24 bits) and finally 4) define first address + number of
-      addresses (which can be zero if only one address is
-      needed). This approach has been defined below.</t>
+      <t>This mechanism uses approach similar to existing mechanisms
+      in DHCP. There is one container option (IA_LL) that contains
+      the actual MAC address or addresses, represented by LLADDR
+      option. Each such option represents an range, which is expressed
+      as a first address with a number that specifies how many
+      additional addresses are included.</t>
 
       <section anchor="IA_LL"
                title="Identity Association for Link-Layer Addresses Option">

@@ -83,7 +83,7 @@
       Identifier) global address space. For those reasons, it is
       desired to have some form of local authority that would be able
       to assign MAC addresses.</t>
-         
+
       <t>The IEEE originally set aside half of the 48-bit MAC Address
       space for local use (where the U/L bit is set to 1). In 2017, the
       IEEE specified an optional specification (IEEE 802c) that divides
@@ -115,6 +115,30 @@
       described in BCP 14 <xref target="RFC2119"/> <xref
       target="RFC8174" /> when, and only when, they
       appear in all capitals, as shown here.</t>
+    </section>
+
+    <section anchor="terminology" title="Terminology">
+
+      <t>The DHCPv6 terminology relevant to this specification from the DHCPv6
+      Protocol <xref target="RFC3315"/> applies here.</t>
+
+      <t>
+        <list hangIndent="26" style="hanging">
+          <t hangText="client">A device that is interested in
+          obtaining MAC addresses. It implements DHCPv6 a limited
+          client functionality with the additional mechanisms
+          specified in this document.</t>
+          <t hangText="server">A software that manages MAC address
+          allocation and is able respond to client queries. It
+          implements DHCPv6 server functionality as described in <xref
+          target="RFC3315"/>, with the additional mechanisms specified
+          in this document.</t>
+          <t hangText="address">Unless specified otherwise, an address
+          means a link-layer (or MAC) address, as defined in IEEE802.
+          The address is typically 6 bytes long, but some network
+          architectures may use different lengths.</t>
+        </list>
+      </t>
 
     </section>
 
@@ -222,6 +246,55 @@
         requested addresses decreased by one.</t>
       </section>
 
+      <section title="Requesting Addresses">
+        <t>The MAC addresses are assigned in groups. The smallest
+        group is a single address. To request an assignment, client
+        sends Solicit message with IA_LL container in it. Optionally,
+        it may include LLADDR in it to signal some of its
+        preferences: to request specific MAC address by filling
+        link-layer-address field or requesting more than one address
+        by sending non-zero value in extra-addresses field. A client
+        that wishes to receive certain number of addresses, but has
+        no preferrence regarding it, should send link-layer-len set to
+        the lenght of the MAC address (typically 6 for most network
+        architectures), zeroed link-layer-address and extra-addresses
+        set to a value of desired addresses minus one.</t>
+
+        <t>The server, upon receiving IA_LL container, inspects its
+        content and may offer address or addresses according to its
+        policy. The server MAY take into consideration the values
+        client sent in LLADDR option. However, server MAY chose to
+        ignore some or all of them. In paricular, the server may
+        send a different address than requested, or grant a smaller
+        number of addresses. Client sends back Advertise message
+        containing LLADDR option that specifies address or address
+        being offered. If the server is unable to provide any
+        addresses it MUST include Status Code option (see
+        <xref target="RFC3315" />, Section 22.13) with status set to
+        NoAddrsAvail.</t>
+
+        <t>The client MUST be able to handle a response that contains
+        address or addresses different than those requested.</t>
+
+        <t>Client waits for available servers to send Advertise
+        responses and picks one server as defined in Section 17.1.3 of
+        <xref target="RFC3315"/>. Client then sends Request message
+        that includes IA_LL container option with the LLADDR option
+        copied from the Advertise message sent by the chosen server.
+        </t>
+
+        <t>Upon reception of Request message with IA_LL container
+        option, the server assigns requested addresses. The server MAY
+        alter the allocation at this time. It then generates and sends
+        a Reply message back to the client.</t>
+        <!-- add references to 3315 regarding t1, t2 timers and
+             appropriate sections that define how to transmit packets
+             (client send to multicast, server to unicast, the relay
+             mechanism etc.). Just add references, not -->
+
+        <!-- should we mention rapid commit or preference 255 here? -->
+      </section>
+
       <section title="Renewing and releasing addresses">
       <t>TODO: How client renews/releases? Make sure that the whole
       block is always renewed/released. Further fragments are not
@@ -318,7 +391,7 @@
         </t>
 
       </section>
-      
+
       <section anchor="LLADDR"
                title="Link Layer Addresses Option">
 
@@ -393,7 +466,7 @@
             are no such options defined, but they may appear in the future.</t>
           </list>
         </t>
-        
+
       </section>
 
     </section>
@@ -466,7 +539,7 @@
                   target="https://mentor.ieee.org/802.11/dcn/02/11-02-0109-00-000i-temporary-mac-address-for-anonymity.ppt" />
         </front>
       </reference>
-         
+
       <reference anchor="IEEEStd802c-2017">
         <front>
           <title>
@@ -480,34 +553,34 @@
 
           <date />
         </front>
-      </reference>         
+      </reference>
 
     </references>
-       
+
     <section anchor="IEEE802cSummary" title="IEEE 802c Summary">
-         
+
       <t>This appendix provides a brief summary of IEEE802c from
-           <xref target="IEEEStd802c-2017"/>.</t>  
-         
+           <xref target="IEEEStd802c-2017"/>.</t>
+
       <t>The original IEEE 802 specifications assigned half of the 48-bit MAC address
       space to local use -- these addresses have the U/L bit set to 1 and are locally
       administered with no imposed structure.</t>
-           
+
       <t>In 2017, the IEEE issued the 802c specification which defines a new "optional
       Structured Local Address Plan (SLAP) that specifies different assignment
       approaches in four specified regions of the local MAC address space." Under this
       plan, there are 4 SLAP quadrants that use different assignment policies.</t>
-           
+
       <t>The first octet of the MAC address Z and Y bits define the quadrant. In IEEE
       representation, these bits are as follows:</t>
-           
+
       <figure align="center" anchor="SLAP-Bits"
                 title="SLAP Bits">
           <preamble></preamble>
-           
+
           <artwork align="left"><![CDATA[
     LSB                MSB
-    M  X  Y  Z  -  -  -  -  
+    M  X  Y  Z  -  -  -  -
     |  |  |  |
     |  |  |  +------------ SLAP Z-bit
     |  |  +--------------- SLAP Y-bit
@@ -517,9 +590,9 @@
 
           <postamble></postamble>
         </figure>
-         
+
       <t>The SLAP quardants are:</t>
-      
+
 <texttable title="SLAP Quadrants">
 <ttcol align='right'>Quadrant</ttcol>
 <ttcol align='left'>Y-bit</ttcol>
@@ -537,25 +610,25 @@
       Z bits) for 48-bit MAC addresses. This leaves 24-bits for the locally
       assigned address for each CID for unicast (M-bit = 0) and also for
       multicast (M-bit = 1). The CID is assigned by the IEEE RA.</t>
-      
+
       <t>Standard Assigned Identifier (SAI) derived MAC addresses are
       assigned by a protocol specified in an IEEE 802 standard. For
       48-bit MAC addresses, 44 bits are available. Multiple protocols
       for assigning SAIs may be specified in IEEE standards. Coexistance of
       multiple protocols may be supported by limiting the subspace available
       for assignment by each protocol.</t>
-       
+
       <t>Adminstratively Assigned Identifier (AAI) derived MAC addresses are
       assigned locally. Administrators manage the space as needed. Note that
       multicast IPv6 packets (<xref target="RFC2464"/>) use a destination address
       starting in 33-33 and this falls within this space and therefore should
       not be used to avoid conflict with IPv6 multicast addresses. For
       48-bit MAC addresses, 44 bits are available.</t>
-            
+
       <t>The last quandrant is reserved for future use. While they may be used
       for AAI space, administrators should be aware that future specifications
       may define alternate uses that could be incompatible.</t>
-           
+
     </section>
 
   </back>

@@ -180,7 +180,7 @@
       available DHCP servers. Each server available will send an
       Advertise message with offered MAC address or addresses. The
       client will then pick the best server, as governed by
-      <xref="RFC3315"/>, and will send Request message to that server.
+      <xref target="RFC3315"/>, and will send Request message to that server.
       The server will then assign the MAC addresses and send a Reply
       message. Upon recection, the client can start using those MAC
       addresses.</t>
@@ -292,10 +292,20 @@
              (client send to multicast, server to unicast, the relay
              mechanism etc.). Just add references, not -->
 
+      <t>TODO: How exactly the Use Temporary MAC address for
+      anonymity, IEEE 802.11-02/109r0 works? Can we turn this into a
+      way to "upgrade" the temporary address into permanent one? "Yes,
+      I confirm your temp address is really unique. You can keep
+      it."</t>
+
+      <!--
+      <t> If additional addresses are needed, send another
+      request (but obey rate limiting).</t> -->
+
         <!-- should we mention rapid commit or preference 255 here? -->
       </section>
 
-      <section title="Renewing and releasing addresses">
+      <section title="Renewing Adddresses">
       <t>TODO: How client renews/releases? Make sure that the whole
       block is always renewed/released. Further fragments are not
       allowed.</t>
@@ -309,19 +319,12 @@
       algorithm.</t>
       </section>
 
-      <section title="Other questions">
-      <t>TODO: What should the server do if client asks for X
-      addresses, but for whatever reason (limited resources or policy), the
-      server is only able to assign Y? Proposed answer: respond with
-      a smaller block and add text: client MUST accept the value sent
-      by client. If additional addresses are needed, send another
-      request (but obey rate limiting).</t>
+      <section title="Releasing Addresses">
 
-      <t>TODO: How exactly the Use Temporary MAC address for
-      anonymity, IEEE 802.11-02/109r0 works? Can we turn this into a
-      way to "upgrade" the temporary address into permanent one? "Yes,
-      I confirm your temp address is really unique. You can keep it."</t>
+        <t>TODO</t>
+
       </section>
+
     </section>
 
     <section anchor="option" title="Option definitions">

@@ -56,13 +56,12 @@
     <!--  SECTION 0:  Abstract                      -->
 
     <abstract>
-      <t>In certain environments, e.g. large scale virtualisation
-      deployments, new devices are created in automated manner. Such
-      devices typically have their link layer (MAC) addresses
-      randomised. With sufficient scale the likelihood of collision is
-      not acceptable. Therefore an allocation mechanism is
-      required. This draft proposes an extension to DHCPv6 that allows
-      a scalable approach to link layer address assignments.</t>
+      <t>In certain environments, e.g. large scale virtualisation deployments,
+      new devices are created in automated manner. Such devices typically have
+      their link layer (MAC) addresses randomised. With sufficient scale the
+      likelihood of collision is not acceptable. Therefore an allocation
+      mechanism is required. This draft proposes an extension to DHCPv6 that
+      allows a scalable approach to link layer address assignments.</t>
 
     </abstract>
   </front>
@@ -71,72 +70,80 @@
     <section anchor="intro" title="Introduction">
       <!-- 1, line 230-->
 
-      <t>There are several new deployment types that deal with a large
-      number of devices that need to initialised. One of them is a
-      scenario where VM (virtual machines) are created on a massive
-      scale. Typically the new VM instances are assigned a random link
-      layer (MAC) address, but that does not scale well due to
-      birthday paradox. Another use case are IOT devices. Typically
-      there is no need to provide global uniqueness of MAC addresses
-      for such devices. On the other hand, huge number of such devices
-      would likely exhaust a vendor's OUI (Organisation's Unique
-      Identifier) global address space. For those reasons, it is
-      desired to have some form of local authority that would be able
-      to assign MAC addresses.</t>
+      <t>There are several new deployment types that deal with a large number of
+      devices that need to initialised. One of them is a scenario where VM
+      (virtual machines) are created on a massive scale. Typically the new VM
+      instances are assigned a random link layer (MAC) address, but that does
+      not scale well due to birthday paradox. Another use case are IOT
+      devices. Typically there is no need to provide global uniqueness of MAC
+      addresses for such devices. On the other hand, huge number of such devices
+      would likely exhaust a vendor's OUI (Organisation's Unique Identifier)
+      global address space. For those reasons, it is desired to have some form
+      of local authority that would be able to assign MAC addresses.</t>
 
-      <t>The IEEE originally set aside half of the 48-bit MAC Address
-      space for local use (where the U/L bit is set to 1). In 2017, the
-      IEEE specified an optional specification (IEEE 802c) that divides
-      this space into quadrants (Standards Assigned Identifier, Extended
-      Local Identifier, Administratively Assigned Identifier, and a
-      Reserved quadrant) - more details are in <xref
-      target="IEEE802cSummary"/>. The IEEE is also
-      working to specify protocols and procedures for assignment of
-      locally unique addresses (IEEE 802.1cq). This work may serve
-      as one such protocol for assignment. For additional background,
-      see <xref target="IEEE-802-Tutorial"/>.</t>
+      <t>The IEEE originally set aside half of the 48-bit MAC Address space for
+      local use (where the U/L bit is set to 1). In 2017, the IEEE specified an
+      optional specification (IEEE 802c) that divides this space into quadrants
+      (Standards Assigned Identifier, Extended Local Identifier,
+      Administratively Assigned Identifier, and a Reserved quadrant) - more
+      details are in <xref target="IEEE802cSummary"/>. The IEEE is also working
+      to specify protocols and procedures for assignment of locally unique
+      addresses (IEEE 802.1cq). This work may serve as one such protocol for
+      assignment. For additional background, see <xref
+      target="IEEE-802-Tutorial"/>.</t>
 
-      <t>This document proposes a new mechanism that extends DHCPv6
-      operation to handle MAC address assignments.</t>
+      <t>This document proposes a new mechanism that extends DHCPv6 operation to
+      handle MAC address assignments.</t>
 
-      <t>Since DHCPv6 (<xref target="RFC3315"/>) is a protocol that can
-      allocate various types
-      of resources (non-temporary addresses, temporary addresses,
-      prefixes, but also many options) and has necessary
-      infrastructure to maintain such assignment, it is a good
-      candidate for the desired functionality.</t>
+      <t>Since DHCPv6 (<xref target="I-D.ietf-dhc-rfc3315bis"/>) is a protocol
+      that can allocate various types of resources (non-temporary addresses,
+      temporary addresses, prefixes, but also many options) and has necessary
+      infrastructure (numerous server and client implementations, large deployed
+      relay infrastructure, supportive solutions, like leasequery and failover)
+      to maintain such assignment, it is a good candidate to address the desired
+      functionality.</t>
     </section>
 
     <section anchor="requirements" title="Requirements">
-      <t>
-      The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
-      NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
-      "MAY", and "OPTIONAL" in this document are to be interpreted as
-      described in BCP 14 <xref target="RFC2119"/> <xref
-      target="RFC8174" /> when, and only when, they
-      appear in all capitals, as shown here.</t>
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+      "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+      "OPTIONAL" in this document are to be interpreted as described in BCP 14
+      <xref target="RFC2119"/> <xref target="RFC8174" /> when, and only when,
+      they appear in all capitals, as shown here.</t>
     </section>
 
     <section anchor="terminology" title="Terminology">
 
       <t>The DHCPv6 terminology relevant to this specification from the DHCPv6
-      Protocol <xref target="RFC3315"/> applies here.</t>
+      Protocol <xref target="I-D.ietf-dhc-rfc3315bis"/> applies here.</t>
 
       <t>
         <list hangIndent="26" style="hanging">
-          <t hangText="client">A device that is interested in
-          obtaining MAC addresses. It implements DHCPv6 a limited
-          client functionality with the additional mechanisms
-          specified in this document.</t>
-          <t hangText="server">A software that manages MAC address
-          allocation and is able respond to client queries. It
-          implements DHCPv6 server functionality as described in <xref
-          target="RFC3315"/>, with the additional mechanisms specified
-          in this document.</t>
-          <t hangText="address">Unless specified otherwise, an address
-          means a link-layer (or MAC) address, as defined in IEEE802.
-          The address is typically 6 bytes long, but some network
-          architectures may use different lengths.</t>
+          <t hangText="client">A device that is interested in obtaining MAC
+          addresses. It implements basic DHCPv6 mechanisms needed for a DHCPv6
+          client, except support for temporary or non-temporary IPv6 addresses
+          (IA_NA, IA_TA container options) or IPv6 prefixes (IA_PD option), but
+          it supports additional mechanisms (IA_LL in paricular) specified in
+          this document.</t>
+
+          <t hangText="server">A software that manages MAC address allocation
+          and is able respond to client queries. It implements basic DHCPv6
+          server functionality as described in <xref
+          target="I-D.ietf-dhc-rfc3315bis"/> except support for temporary or
+          non-temporary IPv6 addresses (IA_NA, IA_TA container options) or IPv6
+          prefixes (IA_PD option), with the additional mechanisms specified in
+          this document.</t>
+
+          <t hangText="address">Unless specified otherwise, an address means a
+          link-layer (or MAC) address, as defined in IEEE802.  The address is
+          typically 6 bytes long, but some network architectures may use
+          different lengths.</t>
+
+          <t hangTest="address block">Certain number of consecutive link-layer
+          (MAC) addresses. Address block is expressed as first address + a
+          number that designates number of additional (extra) addresses. A
+          single address can be represented by the address itself and zero extra
+          addresses.</t>
         </list>
       </t>
 
@@ -145,50 +152,45 @@
     <section anchor="overview" title="Mechanism overview">
 
       <t>This mechanism is designed to be generic and usable in many
-      deployments, but there are two scenarios it attempts to address
-      in particular. The first one pertains to large scale
-      virtualization. In such environments the governing entity
-      often called hypervisor is frequently required to spawn
-      new VMs (virtual machines). The hypervisor needs to assign
-      new MAC addresses to those machines. It acts as a DHCP client
-      and requests available DHCP servers to assign one or more MAC
-      addresses (an address range). Hypervisor does not use those
-      addresses by itself, but rather uses them to create new VMs with
-      appropriate MAC addresses. It is worth pointing out a cumulative
-      nature of scenario. Over time hypervisor is likely to increase
-      its MAC addresses usage. While some obsolete VMs will be
-      deleted and their MAC addresses will become eligible for
-      release, it is unexpected for all MAC addresses to be ever
-      released.</t>
+      deployments, but there are two scenarios it attempts to address in
+      particular. The first one pertains to large scale virtualization. In such
+      environments the governing entity often called hypervisor is frequently
+      required to spawn new VMs (virtual machines). The hypervisor needs to
+      assign new MAC addresses to those machines. It acts as a DHCP client and
+      requests available DHCP servers to assign one or more MAC addresses (an
+      address range). Hypervisor does not use those addresses by itself, but
+      rather uses them to create new VMs with appropriate MAC addresses. It is
+      worth pointing out a cumulative nature of scenario. Over time hypervisor
+      is likely to increase its MAC addresses usage. While some obsolete VMs
+      will be deleted and their MAC addresses will become eligible for release,
+      it is unexpected for all MAC addresses to be ever released.</t>
 
-      <t>Another usage scenario is related to IOT (Internet of
-      Things). With emergence of IOT solution a new class of cheap,
-      sometimes short lived and disposable devices has
-      emerged. Examples may include various sensors (e.g. medical) and
-      actuators or controllable LED lights. Upon first boot, the
-      device uses temporary MAC address, as described in
-      <xref target="IEEEStd802c-2017"/>, to send initial DHCP packets to
-      available DHCP servers. Such devices will typically request
-      a single MAC address for each available network interface,
-      which typically mean one MAC address per device. Once the server
-      assigns a MAC address, the device abandons its temporary MAC
-      address.</t>
+      <t>Another usage scenario is related to IOT (Internet of Things). With
+      emergence of IOT solution a new class of cheap, sometimes short lived and
+      disposable devices has emerged. Examples may include various sensors
+      (e.g. medical) and actuators or controllable LED lights. Upon first boot,
+      the device uses temporary MAC address, as described in <xref
+      target="IEEEStd802c-2017"/>, to send initial DHCP packets to available
+      DHCP servers. Such devices will typically request a single MAC address for
+      each available network interface, which typically mean one MAC address per
+      device. Once the server assigns a MAC address, the device abandons its
+      temporary MAC address.</t>
 
-      <t>In all scenarios the protocol operates in fundamentally the
-      same way. The device requesting an address, acting as a DHCP
-      client, will send Solicit message with IA_LL option to all
-      available DHCP servers. Each server available will send an
-      Advertise message with offered MAC address or addresses. The
-      client will then pick the best server, as governed by
-      <xref target="RFC3315"/>, and will send Request message to that server.
-      The server will then assign the MAC addresses and send a Reply
-      message. Upon recection, the client can start using those MAC
-      addresses.</t>
+      <t>In all scenarios the protocol operates in fundamentally the same
+      way. The device requesting an address, acting as a DHCP client, will send
+      Solicit message with IA_LL option to all available DHCP servers. That
+      IA_LL option may include LLADDR option with specific address as a hint for
+      the server.  Each server available will send an Advertise message with
+      offered MAC address or addresses. The client will then pick the best
+      server, as governed by <xref target="I-D.ietf-dhc-rfc3315bis"/>, and will
+      send Request message to that server.  The server will then assign the MAC
+      addresses and send a Reply message. Upon recection, the client can start
+      using those MAC addresses.</t>
 
-      <t>Normal DHCP mechanisms are in use. The client is expected
-      to periodically renew the MAC addresses as governed by T1 and T2
-      timers. This mechanism can be administratively disabled by
-      setting T1 and T2 to infinite values.</t>
+      <t>Normal DHCP mechanisms are in use. The client is expected to
+      periodically renew the MAC addresses as governed by T1 and T2 timers. This
+      mechanism can be administratively disabled by setting T1 and T2 to
+      infinite values.</t>
 
       <t>The client can release MAC addresses when they are no longer
       needed by sending a Release message.</t>
@@ -196,135 +198,152 @@
       <t>Confirm, Decline, Reconfigure and Information-Request
       messages are not used in MAC address assignment.</t>
 
+      <t>Clients implementing this mechanism SHOULD use rapid-commit option as
+      defined in Section 18.2.10.1 of <xref target="I-D.ietf-dhc-rfc3315bis"
+      />.</t>
+
+      <t>The standard four message (Solicit, Advertise, Request, Reply) exchange
+      may be shortened to two messages (Solicit, Reply) using Rapid commit
+      option (see Section 5.1 of <xref target="I-D.ietf-dhc-rfc3315bis" />.</t>
+
       <!-- Q: Perhaps we could always use rapid-commit here? -->
 
-      <t>DISCUSSION: Even though in scenarios with thousands of
-      devices in place the birthday paradox dictates the collisions
-      are likely, the short window of opportunity for the collision to
-      actually occur alleviates the problem to a large degree.</t>
+      <t>An administrator may make the address assignment permanent by using
+      infinite lifetimes, as defined in Section 7.7 of <xref
+      target="I-D.ietf-dhc-rfc3315bis"/>. An administrator may also disable
+      renewal mechanisms by setting T1 and T2 values to infinity.</t>
 
-      <section title="Design assumptions">
+      <t>DISCUSSION: A device may send its MAC address in LLADDR option to ask
+      the server to register it, make it permanent for the lease duration.  The
+      client MUST be prepared to use a different address if the server choses
+      not to honour its hint.</t>
 
-      <t>One of the essential aspects of this mechanism is its
-      cumulative nature, especially in the hypervisor scenario. The
-      server-client relationship does not look like other DHCP
-      transactions. This is especially true in hypervisor scenario. In
-      typical environment there would be one server and rather small
-      number of hypervisors, possibly even only one. However, over
-      time the number of MAC addresses requested by a client will
-      likely increase over time as new VMs are spawned.</t> -->
+      <t>DISCUSSION: Even though in scenarios with thousands of devices in place
+      the birthday paradox dictates the collisions are likely, the short window
+      of opportunity for the collision to actually occur alleviates the problem
+      to a large degree.</t>
+    </section>
 
-      <t>Another aspect crucial for efficient design is the
-      observation that a single client acting as hypervisor will
-      likely use thousands of addresses. Therefore an approach similar
-      to what is used for address or prefix assignment (IA container
-      with all assigned addresses listed, one option for each address)
-      would not work well. Therefore the mechanism should operate on MAC
-      address ranges, rather than single values. This does not prevent
-      the users to treat individual MAC addresses as ranges with just
-      one address.</t>
-      </section>
+    <section title="Design assumptions">
+      <t>One of the essential aspects of this mechanism is its cumulative
+      nature, especially in the hypervisor scenario. The server-client
+      relationship does not look like other DHCP transactions. This is
+      especially true in hypervisor scenario. In typical environment there
+      would be one server and rather small number of hypervisors, possibly
+      even only one. However, over time the number of MAC addresses requested
+      by a client will likely increase over time as new VMs are spawned.</t>
 
-      <section title="Requesting addresses">
-        <t>Client sends the requested link-layer address in its packet
-        as a hint. Several cases can be considered here. First, if the
-        client doesn't have any previous link-layer addresses assigned
-        and doesn't have any specific preferences, it can request any
-        address, that is represented as values consisting of only
-        zeroes.
-        </t>
+      <t>Another aspect crucial for efficient design is the observation that a
+      single client acting as hypervisor will likely use thousands of
+      addresses. Therefore an approach similar to what is used for address or
+      prefix assignment (IA container with all assigned addresses listed, one
+      option for each address) would not work well. Therefore the mechanism
+      should operate on MAC address ranges, rather than single values. This
+      does not prevent the users to treat individual MAC addresses as ranges
+      with just one address.</t>
 
-        <t>Client can represent a block of addresses, starting with
-        the specified address and followed by a number of addresses
-        indicated by extra-addresses field. If that field value is 0,
-        then exactly one address is requested.</t>
+      <t>The DHCPv6 mechanisms are reused to large degree, including message
+      and option formats, transmission mechanisms, relay infrastructure and
+      others. However, a device wishing to support this procotol isn't
+      required to support full DHCPv6. In other words, the device may support
+      only assignment of MAC addresses, but not IPv6 addresses or prefixes.</t>
+    </section>
 
-        <t>Client can request a block of addresses, without specifying
-        any particular preferences regarding starting address. This
-        can be achieved using link-layer address consisting of all
-        zeroes and extra-addresses field specifying the number of
-        requested addresses decreased by one.</t>
-      </section>
+    <section title="Information encoding">
+      <t>Client may send a requested address in the LLADDR option encapsulated
+      in IA_LL option as a hint. If a client didn't send LLADDR, the server
+      will act as if LLADDR option was sent with 6 bytes long address
+      consisting of all zeros.</t>
 
-      <section title="Requesting Addresses">
-        <t>The MAC addresses are assigned in groups. The smallest
-        group is a single address. To request an assignment, client
-        sends Solicit message with IA_LL container in it. Optionally,
-        it may include LLADDR in it to signal some of its
-        preferences: to request specific MAC address by filling
-        link-layer-address field or requesting more than one address
-        by sending non-zero value in extra-addresses field. A client
-        that wishes to receive certain number of addresses, but has
-        no preferrence regarding it, should send link-layer-len set to
-        the lenght of the MAC address (typically 6 for most network
-        architectures), zeroed link-layer-address and extra-addresses
-        set to a value of desired addresses minus one.</t>
+      <t>The LLADDR option can represent a block of addresses, starting with
+      the specified address and followed by a number of addresses indicated by
+      extra-addresses field. If that field value is 0, then exactly one
+      address is requested.</t>
 
-        <t>The server, upon receiving IA_LL container, inspects its
-        content and may offer address or addresses according to its
-        policy. The server MAY take into consideration the values
-        client sent in LLADDR option. However, server MAY chose to
-        ignore some or all of them. In paricular, the server may
-        send a different address than requested, or grant a smaller
-        number of addresses. Client sends back Advertise message
-        containing LLADDR option that specifies address or address
-        being offered. If the server is unable to provide any
-        addresses it MUST include Status Code option (see
-        <xref target="RFC3315" />, Section 22.13) with status set to
-        NoAddrsAvail.</t>
+      <t>Client can request a block of addresses, without specifying any
+      particular preferences regarding starting address. This can be achieved
+      using link-layer address consisting of all zeroes and extra-addresses
+      field specifying the number of requested addresses decreased by one.</t>
+    </section>
 
-        <t>The client MUST be able to handle a response that contains
-        address or addresses different than those requested.</t>
+    <section title="Requesting Addresses">
+      <t>The MAC addresses are assigned in groups. The smallest group is a
+      single address. To request an assignment, client sends Solicit message
+      with IA_LL container in it. Optionally, it may include LLADDR in it to
+      signal some of its preferences: to request specific MAC address by
+      filling link-layer-address field or requesting more than one address by
+      sending non-zero value in extra-addresses field. A client that wishes to
+      receive certain number of addresses, but has no preferrence regarding
+      it, should send link-layer-len set to the lenght of the MAC address
+      (typically 6 for most network architectures), zeroed link-layer-address
+      and extra-addresses set to a value of desired addresses minus one.</t>
 
-        <t>Client waits for available servers to send Advertise
-        responses and picks one server as defined in Section 17.1.3 of
-        <xref target="RFC3315"/>. Client then sends Request message
-        that includes IA_LL container option with the LLADDR option
-        copied from the Advertise message sent by the chosen server.
-        </t>
+      <t>The server, upon receiving IA_LL container, inspects its content and
+      may offer address or addresses according to its policy. The server MAY
+      take into consideration the values client sent in LLADDR
+      option. However, the server MAY chose to ignore some or all of them. In
+      paricular, the server may send a different address than requested, or
+      grant a smaller number of addresses than requested. The server sends
+      back Advertise message containing LLADDR option that specifies address
+      or address being offered. If the server is unable to provide any
+      addresses it MUST include Status Code option (see <xref
+      target="I-D.ietf-dhc-rfc3315bis" />, Section 21.13) with status set to
+      NoAddrsAvail.</t>
 
-        <t>Upon reception of Request message with IA_LL container
-        option, the server assigns requested addresses. The server MAY
-        alter the allocation at this time. It then generates and sends
-        a Reply message back to the client.</t>
-        <!-- add references to 3315 regarding t1, t2 timers and
-             appropriate sections that define how to transmit packets
-             (client send to multicast, server to unicast, the relay
-             mechanism etc.). Just add references, not -->
+      <t>The client MUST be able to handle a response that contains
+      address or addresses different than those requested.</t>
 
-      <t>TODO: How exactly the Use Temporary MAC address for
-      anonymity, IEEE 802.11-02/109r0 works? Can we turn this into a
-      way to "upgrade" the temporary address into permanent one? "Yes,
-      I confirm your temp address is really unique. You can keep
-      it."</t>
+      <t>Client waits for available servers to send Advertise responses and
+      picks one server as defined in Section 18.2.9 of <xref
+      target="I-D.ietf-dhc-rfc3315bis"/>. Client then sends a Request message
+      that includes IA_LL container option with the LLADDR option copied from
+      the Advertise message sent by the chosen server.</t>
 
-      <!--
-      <t> If additional addresses are needed, send another
-      request (but obey rate limiting).</t> -->
+      <t>Upon reception of Request message with IA_LL container option, the
+      server assigns requested addresses. The server MAY alter the allocation
+      at this time. It then generates and sends a Reply message back to the
+      client.</t>
 
-        <!-- should we mention rapid commit or preference 255 here? -->
-      </section>
+      <t>Upon receiving a Reply message, the client parses IA_LL container
+      option and may start using all provided addresses. It MUST restart its
+      T1 and T2 timers to values specified in the IA_LL option.</t>
 
-      <section title="Renewing Adddresses">
-      <t>TODO: How client renews/releases? Make sure that the whole
-      block is always renewed/released. Further fragments are not
-      allowed.</t>
+      <!-- add references to 3315 regarding t1, t2 timers and appropriate
+           sections that define how to transmit packets (client send to
+           multicast, server to unicast, the relay mechanism etc.). Just add
+           references, not -->
 
-      <t>TODO:  The growth in hypervisor case. The hypervisor client
-      will start with certain number of MAC addresses and then will
-      keep asking for more over time. If we go with IAID approach, the
-      client will be sending more and more options over time until MTU
-      limit is hit. If we decide to go with a single container and
-      multiple range options in it, we'll need some sort of compacting
-      algorithm.</t>
-      </section>
+      <!-- <t> If additional addresses are needed, send another request (but
+           obey rate limiting).</t> -->
 
-      <section title="Releasing Addresses">
+      <!-- should we mention rapid commit or preference 255 here? -->
+    </section>
 
-        <t>TODO</t>
+    <section title="Renewing Adddresses">
 
-      </section>
+      <t>Address renewals follow normal DHCPv6 renewals defined in Section
+      18.2.4 of <xref target="I-D.ietf-dhc-rfc3315bis"/>. Once the T1 timer
+      elapses, the client sends Renew messages with IA_LL container option and
+      LLADDR option that contains the address block being renewed. The Renew
+      message contains server identifier option to indicate which server is
+      supposed to process it. The server responds with a Reply message that
+      contains renewed address block. The SHOULD NOT alter the address block
+      being renewed, unless its policy has changed. The server MUST NOT
+      shrink the address block. The server MAY expand the address block by
+      adding additional addresses to it.</t>
 
+      <t>TODO: The growth in hypervisor case. The hypervisor client will start
+      with certain number of MAC addresses and then will keep asking for more
+      over time.</t>
+    </section>
+
+    <section title="Releasing Addresses">
+
+      <t>The client may decide to release leased address block. A client MUST
+      release the whole block in its entiriety. Client does that by sending
+      a Release message that includes IA_LL container option with LLADDR
+      option inside. The Release transmission mechanism is described in
+      Section 18.2.7 of <xref target="I-D.ietf-dhc-rfc3315bis"/>.</t>
     </section>
 
     <section anchor="option" title="Option definitions">
@@ -508,7 +527,7 @@
     <references title="Normative References">
 
       <?rfc include='reference.RFC.2119'?>
-      <?rfc include='reference.RFC.3315'?>
+      <?rfc include="reference.I-D.ietf-dhc-rfc3315bis" ?>
       <?rfc include='reference.RFC.8174'?>
     </references>
 

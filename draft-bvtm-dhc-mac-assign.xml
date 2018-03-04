@@ -188,7 +188,7 @@
       block as a hint for the server. Each available server responds with an Advertise
       message with offered link-layer address or addresses. The client then picks the best
       server, as governed by <xref target="I-D.ietf-dhc-rfc3315bis"/>, and will
-      send a Request message.  The target server will then assign the link-layuer
+      send a Request message.  The target server will then assign the link-layer
       addresses and send a Reply message. Upon reception, the client can start
       using those link-layer addresses.</t>
 

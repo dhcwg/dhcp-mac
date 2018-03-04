@@ -9,7 +9,7 @@
 <?rfc subcompact="no" ?>
 <rfc category="std" docName="draft-bvtm-dhc-mac-assign-00">
   <front>
-    <title abbrev="MAC address assignment in DHCPv6">
+    <title abbrev="DHCPv6 Link-Layer Address Assignment">
     Link-Layer Addresses Assignment Mechanism for DHCPv6</title>
 
     <author fullname="Bernie Volz" initials="B" surname="Volz">
@@ -57,8 +57,8 @@
 
     <abstract>
       <t>In certain environments, e.g. large scale virtualization deployments,
-      new devices are created in automated manner. Such devices typically have
-      their link-layer (MAC) addresses randomized. With sufficient scale the
+      new devices are created in an automated manner. Such devices typically have
+      their link-layer (MAC) addresses randomized. With sufficient scale, the
       likelihood of collision is not acceptable. Therefore an allocation
       mechanism is required. This draft proposes an extension to DHCPv6 that
       allows a scalable approach to link-layer address assignments.</t>
@@ -121,7 +121,7 @@
 
       <t>
         <list hangIndent="26" style="hanging">
-          <t hangText="client">A device that is interested in obtaining MAC
+          <t hangText="client">A device that is interested in obtaining link-layer
           addresses. It implements the basic DHCPv6 mechanisms needed by a DHCPv6
           client as described in <xref target="I-D.ietf-dhc-rfc3315bis"/> and
           supports the new options (IA_LL and LLADDR) specified in this
@@ -129,7 +129,7 @@
           and prefix delegation as specified in <xref
           target="I-D.ietf-dhc-rfc3315bis"/>.</t>
 
-          <t hangText="server">Software that manages MAC address allocation
+          <t hangText="server">Software that manages link-layer address allocation
           and is able to respond to client queries. It implements basic DHCPv6
           server functionality as described in <xref
           target="I-D.ietf-dhc-rfc3315bis"/> and supports the new options
@@ -143,8 +143,8 @@
           different lengths.</t>
 
           <t hangText="address block">A number of consecutive link-layer
-          (MAC) addresses. An address block is expressed as a first address
-          plus a number that designates number of additional (extra) addresses.
+          addresses. An address block is expressed as a first address
+          plus a number that designates the number of additional (extra) addresses.
           A single address can be represented by the address itself and zero
           extra addresses.</t>
         </list>
@@ -158,18 +158,18 @@
       deployments, but there are two scenarios it attempts to address in
       particular. The first one pertains to large scale virtualization. In such
       environments the governing entity is often called a hypervisor and is frequently
-      required to spawn new VMs (virtual machines). The hypervisor needs to
+      required to spawn new VMs. The hypervisor needs to
       assign new MAC addresses to those machines. It acts as a DHCP client and
       requests available DHCP servers to assign one or more MAC addresses (an
       address block). The hypervisor does not use those addresses for itself, but
       rather uses them to create new VMs with appropriate MAC addresses. It is
-      worth pointing out a cumulative nature of a scenario. Over time, the hypervisor
+      worth pointing out the cumulative nature of a scenario. Over time, the hypervisor
       is likely to increase its MAC addresses usage. While some obsolete VMs
       will be deleted and their MAC addresses will become eligible for release or
       reuse, it is unexpected for all MAC addresses to be released.</t>
       <!-- TODO: Tomek: I assume above rework in last sentence is correct? -->
 
-      <t>Another usage scenario is related to IoT (Internet of Things). With
+      <t>Another usage scenario is related to IoT (Internet of Things). With the
       emergence of IoT, a new class of cheap, sometimes short lived and
       disposable devices, has emerged. Examples may include various sensors
       (e.g. medical) and actuators or controllable LED lights. Upon first boot,
@@ -186,24 +186,24 @@
       IA_LL option MUST include a LLADDR option specifying the link-layer-type and
       link-layer-len and may specify a specific address or address
       block as a hint for the server. Each available server responds with an Advertise
-      message with offered MAC address or addresses. The client then picks the best
+      message with offered link-layer address or addresses. The client then picks the best
       server, as governed by <xref target="I-D.ietf-dhc-rfc3315bis"/>, and will
-      send a Request message.  The target server will then assign the MAC
+      send a Request message.  The target server will then assign the link-layuer
       addresses and send a Reply message. Upon reception, the client can start
-      using those MAC addresses.</t>
+      using those link-layer addresses.</t>
 
       <t>Normal DHCP mechanisms are in use. The client is expected to
-      periodically renew the MAC addresses as governed by T1 and T2 timers. This
+      periodically renew the link-layer addresses as governed by T1 and T2 timers. This
       mechanism can be administratively disabled by the server sending
       "infinity" as the T1 and T2 values (see Section 7.7 of
       <xref target="I-D.ietf-dhc-rfc3315bis"/>).</t>
 
-      <t>The client can release MAC addresses when they are no longer
+      <t>The client can release link-layer addresses when they are no longer
       needed by sending a Release message (see Section 18.2.7
       of <xref target="I-D.ietf-dhc-rfc3315bis"/>).</t>
 
       <t>Confirm, Decline, Reconfigure and Information-Request
-      messages are not used in MAC address assignment.</t>
+      messages are not used in link-layer address assignment.</t>
 
       <t>Clients implementing this mechanism SHOULD use the Rapid Commit option
       as specified in Section 5.1 and 18.2.1 of
@@ -215,7 +215,7 @@
       the need for the renewal mechanism by setting the T1 and T2 values to
       infinity.</t>
 
-      <t>DISCUSSION: A device may send its MAC address in a LLADDR option to ask
+      <t>DISCUSSION: A device may send its link-layer address in a LLADDR option to ask
       the server to register that address to the client (if available), making
       the assignment permanent for the lease duration. The
       client MUST be prepared to use a different address if the server choses
@@ -237,21 +237,21 @@
       especially true in the hypervisor scenario. In a typical environment, there
       would be one server and a rather small number of hypervisors, possibly
       even only one. However, over time the number of MAC addresses requested
-      by the hypervisor(s) will likely increase over time as new VMs are spawned.</t>
+      by the hypervisor(s) will likely increase as new VMs are spawned.</t>
 
       <t>Another aspect crucial for efficient design is the observation that a
       single client acting as hypervisor will likely use thousands of
       addresses. Therefore an approach similar to what is used for address or
       prefix assignment (IA container with all assigned addresses listed, one
       option for each address) would not work well. Therefore the mechanism
-      should operate on MAC address blocks, rather than single values. A single
+      should operate on address blocks, rather than single values. A single
       address can be treated as an address block with just one address.</t>
 
       <t>The DHCPv6 mechanisms are reused to large degree, including message
       and option formats, transmission mechanisms, relay infrastructure and
-      others. However, a device wishing to support only MAC address assignment
+      others. However, a device wishing to support only link-layer address assignment
       is not required to support full DHCPv6. In other words, the device may support
-      only assignment of MAC addresses, but not IPv6 addresses or prefixes.</t>
+      only assignment of link-layer addresses, but not IPv6 addresses or prefixes.</t>
     </section>
 
     <section anchor="Information-Encoding" title="Information Encoding">
@@ -267,25 +267,26 @@
     </section>
 
     <section title="Requesting Addresses">
-      <t>The MAC addresses are assigned in groups. The smallest group is a
+      <t>The link-layer addresses are assigned in blocks. The smallest block is a
       single address. To request an assignment, the client sends a Solicit message
       with a IA_LL option in the message. The IA_LL option MUST contain a LLADDR
       option as specified in <xref target="Information-Encoding"/>.</t>
 
       <t>The server, upon receiving a IA_LL option, inspects its content and
-      may offer an address or addresses according to its policy. The server MAY
+      may offer an address or addresses for each LLADDR option according to
+      its policy. The server MAY
       take into consideration the address block requested by the client in
-      the LLADDR option or options. However, the server MAY chose to ignore
+      the LLADDR option. However, the server MAY chose to ignore
       some or all of the requested address block. In particular, the server
       may send a different starting address than requested, or grant a smaller
       number of addresses than requested. The server sends back an Advertise
       message an IA_LL option containing an LLADDR option that specifies
-      address or address being offered. If the server is unable to provide any
-      addresses it MUST include an IA_LL option containing a Status Code
+      the addresses being offered. If the server is unable to provide any
+      addresses it MUST return the IA_LL option containing a Status Code
       option (see Section 21.13 of <xref target="I-D.ietf-dhc-rfc3315bis"/>)
       with status set to NoAddrsAvail.</t>
 
-      <t>The client MUST be able to handle a response that contains
+      <t>The client MUST be able to handle a response that contains an
       address or addresses different than those requested.</t>
 
       <t>The client waits for available servers to send Advertise responses and
@@ -294,7 +295,7 @@
       that includes the IA_LL container option with the LLADDR option copied from
       the Advertise message sent by the chosen server.</t>
 
-      <t>Upon reception of Request message with IA_LL container option, the
+      <t>Upon reception of a Request message with IA_LL container option, the
       server assigns requested addresses. The server MAY alter the allocation
       at this time. It then generates and sends a Reply message back to the
       client.</t>
@@ -306,7 +307,7 @@
       <t>A client that has included a Rapid Commit option in the Solicit, may
       receive a Reply in response to the Solicit and skip the Advertise and
       Request steps above (see Section 18.2.1 of
-      <xref target="I-D.ietf-dhc-rfc3315bis"/>.</t>
+      <xref target="I-D.ietf-dhc-rfc3315bis"/>).</t>
 
       <!-- add references to 3315 regarding t1, t2 timers and appropriate
            sections that define how to transmit packets (client send to
@@ -326,7 +327,7 @@
       18.2.4 of <xref target="I-D.ietf-dhc-rfc3315bis"/>. Once the T1 timer
       elapses, the client starts sending Renew messages with the IA_LL option
       containing a LLADDR option for the address block being renewed. The server 
-      responds with a Reply message that contains renewed address block. The
+      responds with a Reply message that contains the renewed address block. The
       server SHOULD NOT alter the address block
       being renewed, unless its policy has changed. The server MUST NOT
       shrink the address block. The server MAY expand the address block by
@@ -362,7 +363,7 @@
 
       <t>This mechanism uses an approach similar to the existing mechanisms
       in DHCP. There is one container option (the IA_LL option) that contains
-      the actual MAC address or addresses, represented by an LLADDR
+      the actual link-layer address or addresses, represented by an LLADDR
       option. Each such option represents an address block, which is expressed
       as a first address with a number that specifies how many
       additional addresses are included.</t>
@@ -463,9 +464,9 @@
         the lifetimes of any address block in the IA_LL before the lifetimes
         expire, even if the server is unavailable for some short period of
         time.  Recommended values for T1 and T2 are .5 and .8 times the
-        shortest preferred lifetime of the address blocks in the IA that the
+        shortest valid lifetime of the address blocks in the IA that the
         server is willing to extend, respectively.  If the "shortest"
-        preferred lifetime is 0xffffffff ("infinity"), the recommended T1 and
+        valid lifetime is 0xffffffff ("infinity"), the recommended T1 and
         T2 values are also 0xffffffff.  If the time at which the addresses in
         an IA_LL are to be renewed is to be left to the discretion of the
         client, the server sets T1 and T2 to 0.  The client MUST follow the
@@ -487,7 +488,7 @@
    IA_LL-options field of an IA_LL option.  The LLaddr-options fields
    encapsulates those options that are specific to this address block.</t>
 
-   <t>The format of the IA Address option is:</t>
+   <t>The format of the Link-Layer Addresses option is:</t>
 
         <figure align="center" anchor="lladdr-syntax"
                 title="LLADDR Option Format">

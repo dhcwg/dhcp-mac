@@ -383,11 +383,11 @@
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |          OPTION_IA_LL         |          option-len           |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                        iaid (4 octets)                        |
+   |                        IAID (4 octets)                        |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                          t1 (4 octets)                        |
+   |                          T1 (4 octets)                        |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                          t2 (4 octets)                        |
+   |                          T2 (4 octets)                        |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    .                                                               .
    .                         IA_LL-options                         .
@@ -402,14 +402,14 @@
 
             <t hangText="option-len">12 + length of IA_LL-options field.</t>
 
-            <t hangText="iaid">The unique identifier for this IA_LL; the
+            <t hangText="IAID">The unique identifier for this IA_LL; the
                            IAID must be unique among the identifiers for
                            all of this client's IA_LLs.  The number
                            space for IA_LL IAIDs is separate from the
                            number space for other IA option types (i.e.,
                            IA_NA, IA_TA, and IA_PD). A four octets long field.</t>
 
-            <t hangText="t1">The time at which the client should contact
+            <t hangText="T1">The time at which the client should contact
                            the server from which the addresses in the
                            IA_LL were obtained to extend the valid lifetime
                            of the addresses assigned to the IA_LL; T1 is
@@ -417,7 +417,7 @@
                            expressed in units of seconds.  A four octets
                            long field.</t>
 
-            <t hangText="t2">The time at which the client should contact
+            <t hangText="T2">The time at which the client should contact
                            any available server to extend the valid lifetime
                            of the addresses assigned to the IA_LL; T2 is
                            a time duration relative to the current time

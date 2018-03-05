@@ -62,7 +62,7 @@
       likelihood of collision is not acceptable. Therefore an allocation
       mechanism is required. This draft proposes an extension to DHCPv6 that
       allows a scalable approach to link-layer address assignments.</t>
-      
+
       <!-- TODO: We probably should include IoT in abstract. -->
 
     </abstract>
@@ -120,7 +120,7 @@
       Protocol <xref target="I-D.ietf-dhc-rfc3315bis"/> applies here.</t>
 
       <t>
-        <list hangIndent="26" style="hanging">
+        <list hangIndent="14" style="hanging">
           <t hangText="client">A device that is interested in obtaining link-layer
           addresses. It implements the basic DHCPv6 mechanisms needed by a DHCPv6
           client as described in <xref target="I-D.ietf-dhc-rfc3315bis"/> and
@@ -163,11 +163,10 @@
       requests available DHCP servers to assign one or more MAC addresses (an
       address block). The hypervisor does not use those addresses for itself, but
       rather uses them to create new VMs with appropriate MAC addresses. It is
-      worth pointing out the cumulative nature of a scenario. Over time, the hypervisor
+      worth pointing out the cumulative nature of this scenario. Over time, the hypervisor
       is likely to increase its MAC addresses usage. While some obsolete VMs
       will be deleted and their MAC addresses will become eligible for release or
       reuse, it is unexpected for all MAC addresses to be released.</t>
-      <!-- TODO: Tomek: I assume above rework in last sentence is correct? -->
 
       <t>Another usage scenario is related to IoT (Internet of Things). With the
       emergence of IoT, a new class of cheap, sometimes short lived and
@@ -220,14 +219,6 @@
       the assignment permanent for the lease duration. The
       client MUST be prepared to use a different address if the server choses
       not to honor its hint.</t>
-
-      <!-- TODO: Tomek ... not sure of the following context so commented it out
-           for now. ...
-      <t>DISCUSSION: Even though in scenarios with thousands of devices in place
-      the birthday paradox dictates the collisions are likely, the short window
-      of opportunity for the collision to actually occur alleviates the problem
-      to a large degree.</t>
-      -->
     </section>
 
     <section title="Design Assumptions">
@@ -251,7 +242,14 @@
       and option formats, transmission mechanisms, relay infrastructure and
       others. However, a device wishing to support only link-layer address assignment
       is not required to support full DHCPv6. In other words, the device may support
-      only assignment of link-layer addresses, but not IPv6 addresses or prefixes.</t>
+      only assignment of link-layer addresses, but not IPv6 addresses or
+      prefixes.</t>
+
+      <!-- TODO: Do we want to mention Reconfigure? I can't come up with any
+           reasonable scenario where the MAC address change is being enforced by
+           the network. But maybe worth considering it? Lorenzo considers the lack
+           of ability to change parameters assinged by DHCPv6 on demand the most
+           severe protocol deficiency. -->
     </section>
 
     <section anchor="Information-Encoding" title="Information Encoding">
@@ -261,9 +259,15 @@
       starting address of the address block; otherwise it sets this field
       to the starting address. A client sets the extra-addresses field to
       either 0 for a single address or to the size of the requested
-      address block minus 1. A client SHOULD set the valid-lifetime field to
-      0 (as it is ignored by the server).</t>
+      address block minus 1.</t>
 
+      <t>A client SHOULD set the valid-lifetime field to 0 (as it is
+      ignored by the server).</t>
+      <!-- TODO: what about IoT devices with limited life? Some
+           disposable sensors may know their expected life. They could
+           let the server know how long they'll stick around.
+
+      So maybe the server shouldn't ignore this field if non-zero? -->
     </section>
 
     <section title="Requesting Addresses">
@@ -272,19 +276,18 @@
       with a IA_LL option in the message. The IA_LL option MUST contain a LLADDR
       option as specified in <xref target="Information-Encoding"/>.</t>
 
-      <t>The server, upon receiving a IA_LL option, inspects its content and
-      may offer an address or addresses for each LLADDR option according to
-      its policy. The server MAY
-      take into consideration the address block requested by the client in
-      the LLADDR option. However, the server MAY chose to ignore
-      some or all of the requested address block. In particular, the server
-      may send a different starting address than requested, or grant a smaller
-      number of addresses than requested. The server sends back an Advertise
-      message an IA_LL option containing an LLADDR option that specifies
-      the addresses being offered. If the server is unable to provide any
-      addresses it MUST return the IA_LL option containing a Status Code
-      option (see Section 21.13 of <xref target="I-D.ietf-dhc-rfc3315bis"/>)
-      with status set to NoAddrsAvail.</t>
+      <t>The server, upon receiving a IA_LL option, inspects its content and may
+      offer an address or addresses for each LLADDR option according to its
+      policy. The server MAY take into consideration the address block requested
+      by the client in the LLADDR option. However, the server MAY chose to
+      ignore some or all parameters of the requested address block. In
+      particular, the server may send a different starting address than
+      requested, or grant a smaller number of addresses than requested. The
+      server sends back an Advertise message an IA_LL option containing an
+      LLADDR option that specifies the addresses being offered. If the server is
+      unable to provide any addresses it MUST return the IA_LL option containing
+      a Status Code option (see Section 21.13 of <xref
+      target="I-D.ietf-dhc-rfc3315bis"/>) with status set to NoAddrsAvail.</t>
 
       <t>The client MUST be able to handle a response that contains an
       address or addresses different than those requested.</t>
@@ -303,7 +306,7 @@
       <t>Upon receiving a Reply message, the client parses the IA_LL container
       option and may start using all provided addresses. It MUST restart its
       T1 and T2 timers using the values specified in the IA_LL option.</t>
-      
+
       <t>A client that has included a Rapid Commit option in the Solicit, may
       receive a Reply in response to the Solicit and skip the Advertise and
       Request steps above (see Section 18.2.1 of
@@ -326,7 +329,7 @@
       described in Section
       18.2.4 of <xref target="I-D.ietf-dhc-rfc3315bis"/>. Once the T1 timer
       elapses, the client starts sending Renew messages with the IA_LL option
-      containing a LLADDR option for the address block being renewed. The server 
+      containing a LLADDR option for the address block being renewed. The server
       responds with a Reply message that contains the renewed address block. The
       server SHOULD NOT alter the address block
       being renewed, unless its policy has changed. The server MUST NOT
@@ -336,15 +339,20 @@
       <t>TODO: The growth in hypervisor case. The hypervisor client will start
       with certain number of MAC addresses and then will keep asking for more
       over time.</t>
-      
+
       <t>TODO: May have to review this renewing behavior? Server should
       renew or not the entire address block. Not sure about
       expanding the block? Earlier (Advertise), we required server to use
       at most the requested block size; so not sure why to allow expanding
       for Renew.</t>
-      
+      <!-- tomek: where did we say that? IMHO the server should be allowed to
+           expand the block at any occasion, including Advertise. Perhaps the
+           earlier text should be clarified? Some server may have prediction
+           mechanisms implemented and could assign more MAC addresses. This
+           behavior should be allowed. -->
+
       <t>If the client is unable to Renew before the T2 timer elapses, it
-      starts sending Rebind messages as described in 18.2.5 of 
+      starts sending Rebind messages as described in 18.2.5 of
         <xref target="I-D.ietf-dhc-rfc3315bis"/>.</t>
     </section>
 
@@ -357,6 +365,8 @@
       Release transmission mechanism is described in
       Section 18.2.7 of <xref target="I-D.ietf-dhc-rfc3315bis"/>.</t>
 
+      <!-- Discussion: Do we want to introduce a status code for signalling an
+           error in case of cases of partial renew/release? -->
     </section>
 
     <section anchor="option" title="Option Definitions">
@@ -370,7 +380,7 @@
 
       <section anchor="IA_LL"
                title="Identity Association for Link-Layer Addresses Option">
-        
+
    <t>The Identity Association for Link-Layer Addresses option (IA_LL
    option) is used to carry an IA_LL, the parameters associated with the
    IA_LL, and the address blocks associated with the IA_LL.</t>
@@ -433,9 +443,11 @@
         <t>An IA_LL option may only appear in the options area of a DHCP
         message.  A DHCP message may contain multiple IA_LL options (though
         each must have a unique IAID).</t>
-        
+
         <t>Each IA_LL carries one block of link-layer addresses.</t>
-        
+        <!-- TODO: tomek: the text in 10.2 says more than one LLADDR can appear
+             in one IA_LL. We should make our mind and remove one of those -->
+
         <t>The status of any operations involving this IA_LL is indicated
         in a Status Code option (see Section 21.13 of
         <xref target="I-D.ietf-dhc-rfc3315bis"/>) in the IA_LL-options field.
@@ -480,8 +492,7 @@
 
       </section>
 
-      <section anchor="LLADDR"
-               title="Link-Layer Addresses Option">
+      <section anchor="LLADDR" title="Link-Layer Addresses Option">
 
    <t>The Link-Layer Addresses option is used to specify an address block
    associated with a IA_LL. The option must be encapsulated in the
@@ -574,7 +585,8 @@
         should be used carefully.</t>
 
         <t>More than one LLADDR option can appear in an IA_LL option.</t>
-
+        <!-- TODO: tomek: the text in 10.1 says each IA_LL contains one LLADDR.
+             We should make our mind and remove one of those -->
       </section>
 
     </section>

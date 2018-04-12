@@ -266,9 +266,11 @@
         
       <list hangIndent="4" style="hanging">
         <t hangText="1.">00:00:00:00:00:00 (all zeroes) if the client has no
-          hint as to the starting address of the unicast address block.</t>
+          hint as to the starting address of the unicast address block. This
+          address has the IEEE 802 individual/group bit set to 0 (individual).</t>
         <t hangText="2.">01:00:00:00:00:00 if the client has no hint as to
-          the starting address of the multicast address block.</t>
+          the starting address of the multicast address block. This address
+          has the IEEE 802 individual/group bit set to 1 (group).</t>
         <t hangText="3.">Any other value to request a specific block of
           address starting with the specified address (this may be a unicast
           or multicast address).</t>

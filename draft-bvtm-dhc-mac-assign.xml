@@ -621,7 +621,7 @@
     <section anchor="security" title="Security Considerations">
       
       <t>See <xref target="I-D.ietf-dhc-rfc3315bis"/> for the DHCPv6
-      security considerations.<t>
+      security considerations.</t>
         
       <t>TODO: Do we need more?</t>
     </section>

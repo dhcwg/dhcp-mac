@@ -207,7 +207,7 @@
       needed by sending a Release message (see Section 18.2.7
       of <xref target="I-D.ietf-dhc-rfc3315bis"/>).</t>
 
-      <t>Confirm, Decline, Reconfigure and Information-Request
+      <t>Confirm, Decline, and Information-Request
       messages are not used in link-layer address assignment.</t>
 
       <t>Clients implementing this mechanism SHOULD use the Rapid Commit option
@@ -219,6 +219,15 @@
       target="I-D.ietf-dhc-rfc3315bis"/>. An administrator may also the disable
       the need for the renewal mechanism by setting the T1 and T2 values to
       infinity.</t>
+
+      <t>Devices supporting this proposal MAY support reconfigure mechanism,
+      as defined in Section 18.2.11 of <xref target="I-D.ietf-dhc-rfc3315bis"/>.
+      If supported by both server and client, this mechanism allows the administrator
+      to immediately notify clients that the configuration has changed and triggers
+      retrieval of relevant changes immediately, rather than after T1 timer elapses.
+      Since this mechanism requires implementation of Reconfigure Key Authentication
+      Protocol (See Section 20.4 of <xref target="I-D.ietf-dhc-rfc3315bis"/>), small
+      footprint devices may chose to not support it.</t>
 
       <t>DISCUSSION: A device may send its link-layer address in a LLADDR option to ask
       the server to register that address to the client (if available), making
@@ -250,12 +259,6 @@
       is not required to support full DHCPv6. In other words, the device may support
       only assignment of link-layer addresses, but not IPv6 addresses or
       prefixes.</t>
-
-      <!-- TODO: Do we want to mention Reconfigure? I can't come up with any
-           reasonable scenario where the MAC address change is being enforced by
-           the network. But maybe worth considering it? Lorenzo considers the lack
-           of ability to change parameters assinged by DHCPv6 on demand the most
-           severe protocol deficiency. -->
     </section>
 
     <section anchor="Information-Encoding" title="Information Encoding">

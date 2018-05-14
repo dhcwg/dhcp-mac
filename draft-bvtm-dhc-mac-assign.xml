@@ -7,7 +7,7 @@
 <?rfc sortrefs="yes" ?>
 <?rfc compact="yes" ?>
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-bvtm-dhc-mac-assign-00">
+<rfc category="std" docName="draft-bvtm-dhc-mac-assign-01">
   <front>
     <title abbrev="DHCPv6 Link-Layer Address Assignment">
     Link-Layer Addresses Assignment Mechanism for DHCPv6</title>

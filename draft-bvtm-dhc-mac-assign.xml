@@ -284,11 +284,6 @@
 
       <t>A client SHOULD set the valid-lifetime field to 0 (as it is
       ignored by the server).</t>
-      <!-- TODO: what about IoT devices with limited life? Some
-           disposable sensors may know their expected life. They could
-           let the server know how long they'll stick around.
-
-      So maybe the server shouldn't ignore this field if non-zero? -->
     </section>
 
     <section title="Requesting Addresses">
@@ -596,8 +591,6 @@
         should be used carefully.</t>
 
         <t>More than one LLADDR option can appear in an IA_LL option.</t>
-        <!-- TODO: tomek: the text in 10.1 says each IA_LL contains one LLADDR.
-             We should make our mind and remove one of those -->
       </section>
 
     </section>

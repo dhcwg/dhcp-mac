@@ -390,8 +390,9 @@
                title="Identity Association for Link-Layer Addresses Option">
 
    <t>The Identity Association for Link-Layer Addresses option (IA_LL
-   option) is used to carry an IA_LL, the parameters associated with the
-   IA_LL, and the address blocks associated with the IA_LL.</t>
+   option) is used to carry one or more IA_LL options, the parameters
+   associated with the IA_LL, and the address blocks associated with
+   the IA_LL.</t>
 
     <t>The format of the IA_LL option is:</t>
 

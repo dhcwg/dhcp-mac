@@ -7,7 +7,7 @@
 <?rfc sortrefs="yes" ?>
 <?rfc compact="yes" ?>
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-bvtm-dhc-mac-assign-01">
+<rfc category="std" docName="draft-bvtm-dhc-mac-assign-02">
   <front>
     <title abbrev="DHCPv6 Link-Layer Address Assignment">
     Link-Layer Addresses Assignment Mechanism for DHCPv6</title>
@@ -38,6 +38,22 @@
           <country>USA</country>
         </postal>
         <email>tomasz.mrugalski@gmail.com</email>
+      </address>
+    </author>
+
+    <author fullname="Carlos J. Bernardos" initials="CJ." surname="Bernardos">
+      <organization abbrev="UC3M">Universidad Carlos III de
+      Madrid</organization>
+      <address>
+        <postal>
+          <street>Av. Universidad, 30</street>
+          <city>Leganes, Madrid</city>
+          <code>28911</code>
+          <country>Spain</country>
+        </postal>
+        <phone>+34 91624 6236</phone>
+        <email>cjbc@it.uc3m.es</email>
+        <uri>http://www.it.uc3m.es/cjbc/</uri>
       </address>
     </author>
 
@@ -81,7 +97,7 @@
       addresses for such devices. On the other hand, the huge number of such devices
       would likely exhaust a vendor's OUI (Organizationally Unique Identifier)
       global address space. For those reasons, it is desired to have some form
-      of local authority that would be able to assign MAC addresses.</t>
+      of local authority that would be able to assign locally unique MAC addresses.</t>
       
       <t>This document proposes a new mechanism that extends DHCPv6 operation to
       handle link-layer address assignments.</t>
@@ -158,82 +174,169 @@
 
     </section>
 
-    <section anchor="overview" title="Mechanism Overview">
+    <section anchor="overview" title="Deployment scenarios and mechanism overview">
 
       <t>This mechanism is designed to be generic and usable in many
       deployments, but there are two scenarios it attempts to address in
-      particular. The first one pertains to large scale virtualization. In such
-      environments the governing entity is often called a hypervisor and is frequently
-      required to spawn new VMs. The hypervisor needs to
-      assign new MAC addresses to those machines. It acts as a DHCP client and
-      requests available DHCP servers to assign one or more MAC addresses (an
-      address block). The hypervisor does not use those addresses for itself, but
-      rather uses them to create new VMs with appropriate MAC addresses. It is
-      worth pointing out the cumulative nature of this scenario. Over time, the hypervisor
-      is likely to increase its MAC addresses usage. While some obsolete VMs
-      will be deleted and their MAC addresses will become eligible for release or
-      reuse, it is unexpected for all MAC addresses to be released.</t>
+      particular: (i) proxy client mode, and (ii) direct client mode.</t>
 
-      <t>Another usage scenario is related to IoT (Internet of Things). With the
-      emergence of IoT, a new class of cheap, sometimes short lived and
-      disposable devices, has emerged. Examples may include various sensors
-      (e.g. medical) and actuators or controllable LED lights. Upon first boot,
-      the device uses a temporary MAC address, as described in <xref
-      target="IEEE-802.11-02/109r0"/>, to send initial DHCP packets to available
-      DHCP servers. Such devices will typically request a single MAC address for
-      each available network interface, which typically means one MAC address per
-      device. Once the server assigns a MAC address, the device abandons its
-      temporary MAC address.</t>
+      <section anchor="proxy" title="Proxy client mode scenario">
 
-      <t>In all scenarios the protocol operates in fundamentally the same
-      way. The device requesting an address, acting as a DHCP client, will send
-      a Solicit message with a IA_LL option to all available DHCP servers. That
-      IA_LL option MUST include a LLADDR option specifying the link-layer-type and
-      link-layer-len and may specify a specific address or address
-      block as a hint for the server. Each available server responds with an Advertise
-      message with offered link-layer address or addresses. The client then picks the best
-      server, as governed by <xref target="I-D.ietf-dhc-rfc3315bis"/>, and will
-      send a Request message.  The target server will then assign the link-layer
-      addresses and send a Reply message. Upon reception, the client can start
-      using those link-layer addresses.</t>
+        <t>This mode is used when an entity acts as a DHCP client and requests
+        available DHCP servers to assign one or more MAC addresses (an address block),
+        to be then assigned for use to the final end-devices. One relevant example of
+        scenario of application of this mode is large scale virtualization. In such
+        environments the governing entity is often called a hypervisor and is frequently
+        required to spawn new VMs. The hypervisor needs to assign new MAC addresses to
+        those machines. The hypervisor does not use those addresses for itself, but
+        rather uses them to create new VMs with appropriate MAC addresses. It is
+        worth pointing out the cumulative nature of this scenario. Over time, the hypervisor
+        is likely to increase its MAC addresses usage. While some obsolete VMs
+        will be deleted and their MAC addresses will become eligible for release or
+        reuse, it is unexpected for all MAC addresses to be released.</t>
 
-      <t>Normal DHCP mechanisms are in use. The client is expected to
-      periodically renew the link-layer addresses as governed by T1 and T2 timers. This
-      mechanism can be administratively disabled by the server sending
-      "infinity" as the T1 and T2 values (see Section 7.7 of
-      <xref target="I-D.ietf-dhc-rfc3315bis"/>).</t>
+      </section>
 
-      <t>The client can release link-layer addresses when they are no longer
-      needed by sending a Release message (see Section 18.2.7
-      of <xref target="I-D.ietf-dhc-rfc3315bis"/>).</t>
+      <section anchor="direct" title="Direct client mode scenario">
 
-      <t>Confirm, Decline, and Information-Request
-      messages are not used in link-layer address assignment.</t>
+        <t>This mode is used when an entity acts as a DHCP client and requests
+        available DHCP servers to assign one or more MAC addresses (an address block)
+        for its own use. This usage scenario is related to IoT (Internet of Things). With
+        the emergence of IoT, a new class of cheap, sometimes short lived and
+        disposable devices, has emerged. Examples may include various sensors
+        (e.g. medical) and actuators or controllable LED lights. Upon first boot,
+        the device uses a temporary MAC address, as described in <xref
+        target="IEEE-802.11-02/109r0"/>, to send initial DHCP packets to available
+        DHCP servers. Such devices will typically request a single MAC address for
+        each available network interface, which typically means one MAC address per
+        device. Once the server assigns a MAC address, the device abandons its
+        temporary MAC address.</t>
 
-      <t>Clients implementing this mechanism SHOULD use the Rapid Commit option
-      as specified in Section 5.1 and 18.2.1 of
-      <xref target="I-D.ietf-dhc-rfc3315bis"/>.</t>
+      </section>
 
-      <t>An administrator may make the address assignment permanent by specifying
-      use of infinite lifetimes, as defined in Section 7.7 of <xref
-      target="I-D.ietf-dhc-rfc3315bis"/>. An administrator may also the disable
-      the need for the renewal mechanism by setting the T1 and T2 values to
-      infinity.</t>
+      <section anchor="mechanism" title="Mechanism Overview">
 
-      <t>Devices supporting this proposal MAY support reconfigure mechanism,
-      as defined in Section 18.2.11 of <xref target="I-D.ietf-dhc-rfc3315bis"/>.
-      If supported by both server and client, this mechanism allows the administrator
-      to immediately notify clients that the configuration has changed and triggers
-      retrieval of relevant changes immediately, rather than after T1 timer elapses.
-      Since this mechanism requires implementation of Reconfigure Key Authentication
-      Protocol (See Section 20.4 of <xref target="I-D.ietf-dhc-rfc3315bis"/>), small
-      footprint devices may chose to not support it.</t>
+        <t>In all scenarios the protocol operates in fundamentally the same
+        way. The device requesting an address, acting as a DHCP client, will send
+        a Solicit message with a IA_LL option to all available DHCP servers. That
+        IA_LL option MUST include a LLADDR option specifying the link-layer-type and
+        link-layer-len and may specify a specific address or address
+        block as a hint for the server. Each available server responds with an Advertise
+        message with offered link-layer address or addresses. The client then picks the best
+        server, as governed by <xref target="I-D.ietf-dhc-rfc3315bis"/>, and will
+        send a Request message.  The target server will then assign the link-layer
+        addresses and send a Reply message. Upon reception, the client can start
+        using those link-layer addresses.</t>
 
-      <t>DISCUSSION: A device may send its link-layer address in a LLADDR option to ask
-      the server to register that address to the client (if available), making
-      the assignment permanent for the lease duration. The
-      client MUST be prepared to use a different address if the server choses
-      not to honor its hint.</t>
+        <t>Normal DHCP mechanisms are in use. The client is expected to
+        periodically renew the link-layer addresses as governed by T1 and T2 timers. This
+        mechanism can be administratively disabled by the server sending
+        "infinity" as the T1 and T2 values (see Section 7.7 of
+        <xref target="I-D.ietf-dhc-rfc3315bis"/>).</t>
+
+        <t>The client can release link-layer addresses when they are no longer
+        needed by sending a Release message (see Section 18.2.7
+        of <xref target="I-D.ietf-dhc-rfc3315bis"/>).</t>
+
+        <t><xref target="FigMsgFlow"/>, taken from <xref target="I-D.ietf-dhc-rfc3315bis"/>,
+        shows a timeline diagram of the messages exchanged between a client and two servers
+        for the typical lifecycle of one or more leases</t>
+
+        <figure align="center" anchor="FigMsgFlow"
+                title="Timeline diagram of the messages exchanged between
+                       a client and two servers for the typical lifecycle
+                       of one or more leases">
+
+          <artwork align="left"><![CDATA[
+             Server                          Server
+         (not selected)      Client        (selected)
+
+               v               v               v
+               |               |               |
+               |     Begins initialization     |
+               |               |               |
+  start of     | _____________/|\_____________ |
+  4-message    |/ Solicit      | Solicit      \|
+  exchange     |               |               |
+           Determines          |          Determines
+          configuration        |         configuration
+               |               |               |
+               |\              |  ____________/|
+               | \________     | /Advertise    |
+               | Advertise\    |/              |
+               |           \   |               |
+               |      Collects Advertises      |
+               |             \ |               |
+               |     Selects configuration     |
+               |               |               |
+               | _____________/|\_____________ |
+               |/ Request      |  Request     \|
+               |               |               |
+               |               |     Commits configuration
+               |               |               |
+  end of       |               | _____________/|
+  4-message    |               |/ Reply        |
+  exchange     |               |               |
+               |    Initialization complete    |
+               |               |               |
+               .               .               .
+               .               .               .
+               |   T1 (Renewal) Timer Expires  |
+               |               |               |
+  2-message    | _____________/|\_____________ |
+  exchange     |/ Renew        |  Renew       \|
+               |               |               |
+               |               | Commits extended lease(s)
+               |               |               |
+               |               | _____________/|
+               |               |/ Reply        |
+               .               .               .
+               .               .               .
+               |               |               |
+               |      Graceful shutdown        |
+               |               |               |
+  2-message    | _____________/|\_____________ |
+  exchange     |/ Release      |  Release     \|
+               |               |               |
+               |               |         Discards lease(s)
+               |               |               |
+               |               | _____________/|
+               |               |/ Reply        |
+               |               |               |
+               v               v               v
+          ]]></artwork>
+        </figure>
+
+        <t>Confirm, Decline, and Information-Request
+        messages are not used in link-layer address assignment.</t>
+
+        <t>Clients implementing this mechanism SHOULD use the Rapid Commit option
+        as specified in Section 5.1 and 18.2.1 of
+        <xref target="I-D.ietf-dhc-rfc3315bis"/>.</t>
+
+        <t>An administrator may make the address assignment permanent by specifying
+        use of infinite lifetimes, as defined in Section 7.7 of <xref
+        target="I-D.ietf-dhc-rfc3315bis"/>. An administrator may also the disable
+        the need for the renewal mechanism by setting the T1 and T2 values to
+        infinity.</t>
+
+        <t>Devices supporting this proposal MAY support reconfigure mechanism,
+        as defined in Section 18.2.11 of <xref target="I-D.ietf-dhc-rfc3315bis"/>.
+        If supported by both server and client, this mechanism allows the administrator
+        to immediately notify clients that the configuration has changed and triggers
+        retrieval of relevant changes immediately, rather than after T1 timer elapses.
+        Since this mechanism requires implementation of Reconfigure Key Authentication
+        Protocol (See Section 20.4 of <xref target="I-D.ietf-dhc-rfc3315bis"/>), small
+        footprint devices may chose to not support it.</t>
+
+        <t>DISCUSSION: A device may send its link-layer address in a LLADDR option to ask
+        the server to register that address to the client (if available), making
+        the assignment permanent for the lease duration. The
+        client MUST be prepared to use a different address if the server choses
+        not to honor its hint.</t>
+
+      </section>
+
     </section>
 
     <section title="Design Assumptions">
@@ -271,12 +374,17 @@
         <t hangText="1.">00:00:00:00:00:00 (all zeroes) if the client has no
           hint as to the starting address of the unicast address block. This
           address has the IEEE 802 individual/group bit set to 0 (individual).</t>
+
+<!-- [2018-08-24] cjbc: I cannot find an example of use to request a multicast
+                        address. Therefore, I propose to remove this for these
+                        first rounds.
         <t hangText="2.">01:00:00:00:00:00 if the client has no hint as to
           the starting address of the multicast address block. This address
           has the IEEE 802 individual/group bit set to 1 (group).</t>
+-->
         <t hangText="3.">Any other value to request a specific block of
-          address starting with the specified address (this may be a unicast
-          or multicast address).</t>
+          address starting with the specified address<!-- (this may be a unicast
+          or multicast address).--></t>
       </list>
       A client sets the extra-addresses field to
       either 0 for a single address or to the size of the requested
@@ -323,6 +431,9 @@
       option and may start using all provided addresses. It MUST restart its
       T1 and T2 timers using the values specified in the IA_LL option.</t>
 
+      <t>The client MUST be able to handle a Reply message that contains an
+      address or addresses different than those requested.</t>
+
       <t>A client that has included a Rapid Commit option in the Solicit, may
       receive a Reply in response to the Solicit and skip the Advertise and
       Request steps above (see Section 18.2.1 of
@@ -353,9 +464,19 @@
       has a non-zero valid lifetime, its size, starting address, and ending
       address MUST NOT change.</t>
 
+<!-- [2018-08-24] cjbc: first stab at providing text about this, assuming
+                        simpler approach.
       <t>TODO: The growth in hypervisor case. The hypervisor client will start
       with certain number of MAC addresses and then will keep asking for more
       over time.</t>
+-->
+
+      <t>If the requesting client needs additional MAC addresses -- e.g., in the
+      hypervisor scenario because addresses need to be assigned to new VMs -- the
+      simpler approach is for the requesting device to keep the address blocks as
+      atomic once "leased". Therefore, if a client wants more addresses at a later
+      stage, it SHOULD send an IA_LL option with a different IAID to create another
+      "container" for more addresses.</t>
 
       <t>If the client is unable to Renew before the T2 timer elapses, it
       starts sending Rebind messages as described in 18.2.5 of
@@ -635,7 +756,8 @@
       communication. For those peers on the link that are able to
       listen in on the DHCPv6 exchange, they would also be able to
       correlate the client's identity (based on the DUID used) with the
-      assigned address.</t>
+      assigned address. Additional mechanisms, such as the ones described
+      in <xref target="RFC7844"/> can also be used.</t>
       
       <t>TODO: Do we need more?</t>
     </section>
@@ -654,6 +776,7 @@
 
       <?rfc include='reference.RFC.2464'?>
       <?rfc include='reference.RFC.5494'?>
+      <?rfc include='reference.RFC.7844'?>
 
       <reference anchor="IEEE-802-Tutorial">
         <front>

@@ -7,7 +7,7 @@
 <?rfc sortrefs="yes" ?>
 <?rfc compact="yes" ?>
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-ietf-dhc-mac-assign-00">
+<rfc category="std" docName="draft-ietf-dhc-mac-assign-01">
   <front>
     <title abbrev="DHCPv6 Link-Layer Address Assignment">
     Link-Layer Addresses Assignment Mechanism for DHCPv6</title>
@@ -724,9 +724,15 @@
     </section>
 
     <section anchor="server" title="Server Behavior">
-      <t>TODO: Need to describe server operation. Likely also recommend
-      assigning MAC addresses from an appropriate quadrant (see
-      Appendix).</t>
+      <t>TODO: Need to describe server operation.</t>
+      
+      <t>When assigning IEEE 802 MAC addresses, a server may determine
+      the quadrant (see <xref target="IEEE802cSummary"/>) from which to
+      allocate link-layer addresses to a client based on policy that
+      may be derived from options in the client's request (such as the
+      User Class (15) or Vendor Class (16) options) or options designed
+      for this purpose, see <xref target="I-D.ietf-dhc-slap-quadrant"/>.
+      
     </section>
 
     <section anchor="iana" title="IANA Considerations">
@@ -739,9 +745,15 @@
     <section anchor="security" title="Security Considerations">
       
       <t>See <xref target="RFC8415"/> for the DHCPv6
-      security considerations.</t>
+      security considerations. See <xref target="RFC8200"/> for the
+      IPv6 security considerations.</t>
         
-      <t>TODO: Do we need more?</t>
+      <t>There is a possibility of the same link-layer address being
+      used by more than one device if not all parties on a link use
+      this mechanism to obtain a link-layer address from the space
+      assigned to the DHCP server. It is also possible that a bad actor
+      purposely uses a device's link-layer address.</t>
+
     </section>
 
     <section anchor="privacy" title="Privacy Considerations">
@@ -758,8 +770,7 @@
       correlate the client's identity (based on the DUID used) with the
       assigned address. Additional mechanisms, such as the ones described
       in <xref target="RFC7844"/> can also be used.</t>
-      
-      <t>TODO: Do we need more?</t>
+
     </section>
 
   </middle>
@@ -778,6 +789,9 @@
       <?rfc include='reference.RFC.2464'?>
       <?rfc include='reference.RFC.5494'?>
       <?rfc include='reference.RFC.7844'?>
+      <?rfc include='reference.RFC.8200'?>
+      
+      <?rfc include='reference.I-D.ietf-dhc-slap-quadrant'?>
 
       <reference anchor="IEEE-802-Tutorial" target="https://datatracker.ietf.org/meeting/96/materials/slides-96-edu-ieee802work-0/">
         <front>

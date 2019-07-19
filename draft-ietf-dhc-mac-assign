@@ -120,11 +120,12 @@
       optional specification (IEEE 802c) that divides this space into quadrants
       (Standards Assigned Identifier, Extended Local Identifier,
       Administratively Assigned Identifier, and a Reserved quadrant) - more
-      details are in <xref target="IEEE802cSummary"/>. The IEEE is also working
-      to specify protocols and procedures for assignment of locally unique
-      addresses (IEEE 802.1cq). This work may serve as one such protocol for
-      assignment. For additional background, see <xref
-      target="IEEE-802-Tutorial"/>.</t>
+      details are in <xref target="IEEE802cSummary"/>.</t>
+      
+      <t>The IEEE is also working to specify protocols and procedures for
+      assignment of locally unique addresses (IEEE 802.1cq). This work may
+      serve as one such protocol for assignment. For additional background, see
+      <xref target="IEEE-802-Tutorial"/>.</t>
 
     </section>
 
@@ -161,7 +162,7 @@
 
           <t hangText="address">Unless specified otherwise, an address means a
           link-layer (or MAC) address, as defined in IEEE802. The address is
-          typically 6 bytes long, but some network architectures may use
+          typically 6 octets long, but some network architectures may use
           different lengths.</t>
 
           <t hangText="address block">A number of consecutive link-layer
@@ -207,10 +208,10 @@
         (e.g. medical) and actuators or controllable LED lights. Upon first boot,
         the device uses a temporary MAC address, as described in <xref
         target="IEEE-802.11-02-109r0"/>, to send initial DHCP packets to available
-        DHCP servers. Such devices will typically request a single MAC address for
+        DHCP servers. Then, such devices would typically request a single MAC address for
         each available network interface, which typically means one MAC address per
         device. Once the server assigns a MAC address, the device abandons its
-        temporary MAC address.</t>
+        temporary MAC address and uses the assigned (leased) MAC address.</t>
 
       </section>
 
@@ -316,15 +317,15 @@
 
         <t>An administrator may make the address assignment permanent by specifying
         use of infinite lifetimes, as defined in Section 7.7 of <xref
-        target="RFC8415"/>. An administrator may also the disable
+        target="RFC8415"/>. An administrator may also disable
         the need for the renewal mechanism by setting the T1 and T2 values to
         infinity.</t>
 
-        <t>Devices supporting this proposal MAY support reconfigure mechanism,
+        <t>Devices supporting this proposal MAY support the reconfigure mechanism,
         as defined in Section 18.2.11 of <xref target="RFC8415"/>.
         If supported by both server and client, this mechanism allows the administrator
         to immediately notify clients that the configuration has changed and triggers
-        retrieval of relevant changes immediately, rather than after T1 timer elapses.
+        retrieval of relevant changes immediately, rather than after the T1 timer elapses.
         Since this mechanism requires implementation of Reconfigure Key Authentication
         Protocol (See Section 20.4 of <xref target="RFC8415"/>), small
         footprint devices may chose to not support it.</t>
@@ -679,7 +680,7 @@
             value specifies the first address allocated.</t>
 
             <t hangText="extra-addresses">Number of additional
-            addresses that follow address specified in
+            addresses that follow the address specified in
             link-layer-address. For requesting a single address, use
             0. For example: link-layer-address: 02:04:06:08:0a and
             extra-addresses 3 designates a block of 4 addresses,
@@ -692,9 +693,9 @@
             address(es) in the option, expressed in units of seconds.
             A four octets long field.</t>
 
-            <t hangText="LLaddr-options">any encapsulated options that
+            <t hangText="LLaddr-options">Any encapsulated options that
             are specific to this particular address block. Currently there
-            are no such options defined, but they may appear in the future.</t>
+            are no such options defined, but there may be in the future.</t>
           </list>
         </t>
 
@@ -716,23 +717,21 @@
 
     </section>
 
-    <section anchor="client" title="Client Behavior">
-      <t>TODO: We need start this section by clearly defining what
-      'client' means in this context (either hypervisor acting on
-      behalf of the client to be spawned or the IOT device acting on
-      its own behalf).</t>
-    </section>
+    <section anchor="selecting-addresses"
+             title="Selecting Link Layer Addresses for Assignment to an IA_LL">
+      <t>A server selects link layer addresses to be assigned to an IA_LL
+      according to the assignment policies determined by the server
+      administrator.</t>
 
-    <section anchor="server" title="Server Behavior">
-      <t>TODO: Need to describe server operation.</t>
-      
-      <t>When assigning IEEE 802 MAC addresses, a server may determine
-      the quadrant (see <xref target="IEEE802cSummary"/>) from which to
-      allocate link-layer addresses to a client based on policy that
-      may be derived from options in the client's request (such as the
-      User Class (15) or Vendor Class (16) options) or options designed
-      for this purpose, see <xref target="I-D.ietf-dhc-slap-quadrant"/>.
-      
+      <t>Link layer addresses are typically specific to a link and the
+      server SHOULD follow the steps in Section 13.1 of
+      <xref target="RFC8415"/> to determine the client's link.</t>
+
+      <t>For Ethernet / IEEE 802 MAC addresses, a server MAY use additional
+      options supplied by a relay agent or client to select the quadrant
+      (see <xref target="IEEE802cSummary"/>) from which addresses are to
+      be assigned. This MAY include new options, such as those specified
+      in <xref target="I-D.ietf-dhc-slap-quadrant"/>.</t>     
     </section>
 
     <section anchor="iana" title="IANA Considerations">

@@ -366,7 +366,7 @@
     </section>
 
     <section anchor="Information-Encoding" title="Information Encoding">
-      <t>A client MUST send a LLADDR option encapsulated in a IA_LL option
+      <t>A client MUST send a LLADDR option encapsulated in an IA_LL option
       to specify the link-layer-type and link-layer-len values. For link-layer-type
       1 (Ethernet / IEEE 802 48-bit MAC addresses), a client sets
       the link-layer-address field to:
@@ -374,34 +374,37 @@
       <list hangIndent="4" style="hanging">
         <t hangText="1.">00:00:00:00:00:00 (all zeroes) if the client has no
           hint as to the starting address of the unicast address block. This
-          address has the IEEE 802 individual/group bit set to 0 (individual).</t>
+          address has the IEEE 802 individual/group bit set to 0 (individual).
+        </t>
 
 <!-- [2018-08-24] cjbc: I cannot find an example of use to request a multicast
                         address. Therefore, I propose to remove this for these
                         first rounds.
         <t hangText="2.">01:00:00:00:00:00 if the client has no hint as to
           the starting address of the multicast address block. This address
-          has the IEEE 802 individual/group bit set to 1 (group).</t>
+          has the IEEE 802 individual/group bit set to 1 (group).
+        </t>
 -->
-        <t hangText="3.">Any other value to request a specific block of
+        <t hangText="2.">Any other value to request a specific block of
           address starting with the specified address<!-- (this may be a unicast
-          or multicast address).--></t>
+          or multicast address).-->
+        </t>
       </list>
       A client sets the extra-addresses field to
       either 0 for a single address or to the size of the requested
       address block minus 1.</t>
 
-      <t>A client SHOULD set the valid-lifetime field to 0 (as it is
+      <t>A client SHOULD set the valid-lifetime field to 0 (this field MUST be
       ignored by the server).</t>
     </section>
 
     <section title="Requesting Addresses">
       <t>The link-layer addresses are assigned in blocks. The smallest block is a
       single address. To request an assignment, the client sends a Solicit message
-      with a IA_LL option in the message. The IA_LL option MUST contain a LLADDR
+      with an IA_LL option in the message. The IA_LL option MUST contain a LLADDR
       option as specified in <xref target="Information-Encoding"/>.</t>
 
-      <t>The server, upon receiving a IA_LL option, inspects its content and may
+      <t>The server, upon receiving an IA_LL option, inspects its content and may
       offer an address or addresses for each LLADDR option according to its
       policy. The server MAY take into consideration the address block requested
       by the client in the LLADDR option. However, the server MAY chose to
@@ -424,9 +427,10 @@
       the Advertise message sent by the chosen server.</t>
 
       <t>Upon reception of a Request message with IA_LL container option, the
-      server assigns requested addresses. The server MAY alter the allocation
-      at this time. It then generates and sends a Reply message back to the
-      client.</t>
+      server assigns requested addresses. The server allocates block of addresses
+      according to its configured policy. The server MAY assign a different block
+      than requested in the Request message. It then generates and sends a Reply
+      message back to the client.</t>
 
       <t>Upon receiving a Reply message, the client parses the IA_LL container
       option and may start using all provided addresses. It MUST restart its
@@ -546,22 +550,23 @@
                            all of this client's IA_LLs.  The number
                            space for IA_LL IAIDs is separate from the
                            number space for other IA option types (i.e.,
-                           IA_NA, IA_TA, and IA_PD). A four octets long field.</t>
+                           IA_NA, IA_TA, and IA_PD). A 4-octet field
+                           containing an unsigned integer.</t>
 
             <t hangText="T1">The time at which the client should contact
                            the server from which the addresses in the
                            IA_LL were obtained to extend the valid lifetime
                            of the addresses assigned to the IA_LL; T1 is
                            a time duration relative to the current time
-                           expressed in units of seconds.  A four octets
-                           long field.</t>
+                           expressed in units of seconds.  A 4-octet field
+                           containing an unsigned integer.</t>
 
             <t hangText="T2">The time at which the client should contact
                            any available server to extend the valid lifetime
                            of the addresses assigned to the IA_LL; T2 is
                            a time duration relative to the current time
-                           expressed in units of seconds. A four octets
-                           long field.</t>
+                           expressed in units of seconds. A 4-octet field
+                           containing an unsigned integer.</t>
 
             <t hangText="IA_LL-options">Options associated with this IA_LL.
                            A variable length field (12 octets less than
@@ -667,31 +672,30 @@
 
             <t hangText="link-layer-len">Specifies the length of the
             link-layer-address field (typically 6, for a link-layer-type
-            of 1 (Ethernet)). A two octets long field.</t>
+            of 1 (Ethernet)). A 2-octet field containing an unsigned
+            integer.</t>
 
             <t hangText="link-layer-address">Specifies the
-            link-layer address that is being requested or a special
-            value to request any address. For a link-layer
+            link-layer address that is being requested or renewed, or
+            a special value to request any address. For a link-layer
             type of 1 (Ethernet / IEEE 802 48-bit MAC addresses), see
             <xref target="Information-Encoding"/> for details on these
-            values.
-            This value can be only sent by a client that
-            requests a new block. In responses from a server, this
+            values. In responses from a server, this
             value specifies the first address allocated.</t>
 
             <t hangText="extra-addresses">Number of additional
             addresses that follow the address specified in
-            link-layer-address. For requesting a single address, use
-            0. For example: link-layer-address: 02:04:06:08:0a and
+            link-layer-address. For a single address, 0 is used.
+            For example: link-layer-address: 02:04:06:08:0a and
             extra-addresses 3 designates a block of 4 addresses,
             starting from 02:04:06:08:0a (inclusive) and ending with
             02:04:06:08:0d (inclusive). In responses from a server,
             this value specifies the number of additional addresses
-            allocated. A four octets long field.</t>
+            allocated. A 4-octet field containing an unsigned integer.</t>
 
             <t hangText="valid-lifetime">The valid lifetime for the
             address(es) in the option, expressed in units of seconds.
-            A four octets long field.</t>
+            A 4-octet field containing an unsigned integer.</t>
 
             <t hangText="LLaddr-options">Any encapsulated options that
             are specific to this particular address block. Currently there

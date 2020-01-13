@@ -7,7 +7,7 @@
 <?rfc sortrefs="yes" ?>
 <?rfc compact="yes" ?>
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-ietf-dhc-mac-assign-02">
+<rfc category="std" docName="draft-ietf-dhc-mac-assign-03">
   <front>
     <title abbrev="DHCPv6 Link-Layer Address Assignment">
     Link-Layer Addresses Assignment Mechanism for DHCPv6</title>
@@ -739,10 +739,40 @@
     </section>
 
     <section anchor="iana" title="IANA Considerations">
-      <t>IANA is kindly requested to assign new value for options
-      OPTION_LL (tbd1) and OPTION_LLADDR (tbd2) and add those values
-      to the DHCPv6 Option Codes registry maintained at
-      http://www.iana.org/assignments/dhcpv6-parameters.</t>
+      
+         <t>IANA is requested to assign the OPTION_IA_LL (tbd1)
+   option code from the DHCPv6 "Option Codes" registry maintained at
+   http://www.iana.org/assignments/dhcpv6-parameters and use the
+   following data when adding the option to the registry:</t>
+
+<figure>
+<artwork align="left">
+<![CDATA[
+    Value:             tbd1
+    Description:       OPTION_IA_LL
+    Client ORO:        No
+    Singleton Option:  No
+    Reference:         this document
+]]>
+</artwork>
+</figure>
+
+           <t>IANA is requested to assign the OPTION_LLADDR (tbd2)
+   option code from the DHCPv6 "Option Codes" registry maintained at
+   http://www.iana.org/assignments/dhcpv6-parameters and use the
+   following data when adding the option to the registry:</t>
+      
+<figure>
+<artwork align="left">
+<![CDATA[
+    Value:             tbd2
+    Description:       OPTION_LLADDR
+    Client ORO:        No
+    Singleton Option:  No
+    Reference:         this document
+]]>
+</artwork>
+</figure>
     </section>
 
     <section anchor="security" title="Security Considerations">

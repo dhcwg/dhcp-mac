@@ -451,6 +451,10 @@
       receive a Reply in response to the Solicit and skip the Advertise and
       Request steps above (see Section 18.2.1 of
       <xref target="RFC8415"/>).</t>
+      
+      <t>A client that changes its link-layer address on an interface SHOULD
+      follow the recommendations in Section 7.2.6 of <xref target="RFC4861"/>
+      to inform its neighbors of the new link-layer address quickly.</t>
 
       <!-- add references to 3315 regarding t1, t2 timers and appropriate
            sections that define how to transmit packets (client send to
@@ -460,7 +464,6 @@
       <!-- <t> If additional addresses are needed, send another request (but
            obey rate limiting).</t> -->
 
-      <!-- should we mention rapid commit or preference 255 here? -->
     </section>
 
     <section title="Renewing Addresses">

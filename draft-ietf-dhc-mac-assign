@@ -7,7 +7,7 @@
 <?rfc sortrefs="yes" ?>
 <?rfc compact="yes" ?>
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-ietf-dhc-mac-assign-04">
+<rfc category="std" docName="draft-ietf-dhc-mac-assign-05">
   <front>
     <title abbrev="DHCPv6 Link-Layer Address Assignment">
     Link-Layer Addresses Assignment Mechanism for DHCPv6</title>
@@ -833,6 +833,7 @@
     <references title="Normative References">
 
       <?rfc include='reference.RFC.2119'?>
+      <?rfc include='reference.RFC.4861'?>
       <?rfc include='reference.RFC.8174'?>
       <?rfc include="reference.RFC.8415'?>
 

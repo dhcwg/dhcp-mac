@@ -7,7 +7,7 @@
 <?rfc sortrefs="yes" ?>
 <?rfc compact="yes" ?>
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-ietf-dhc-mac-assign-06">
+<rfc category="std" docName="draft-ietf-dhc-mac-assign-07">
   <front>
     <title abbrev="DHCPv6 Link-Layer Address Assignment">
     Link-Layer Addresses Assignment Mechanism for DHCPv6</title>
@@ -98,7 +98,7 @@
       The huge number of such devices would likely exhaust a vendor's OUI
       (Organizationally Unique Identifier) global address space, and while there
       is typically no need to provide global uniqueness for such devices, a
-      link-layer assignment mechanisms allows for conflicts to be avoided inside
+      link-layer assignment mechanism allows for conflicts to be avoided inside
       an administrative domain. For those reasons, it is desired to have some form
       of authority that would be able to assign locally unique MAC addresses.</t>
       
@@ -107,10 +107,10 @@
 
       <t>Since DHCPv6 (<xref target="RFC8415"/>) is a protocol
       that can allocate various types of resources (non-temporary addresses,
-      temporary addresses, prefixes, but also many options) and has necessary
-      infrastructure (numerous server and client implementations, large deployed
-      relay infrastructure, supportive solutions, like leasequery and failover)
-      to maintain such assignment, it is a good candidate to address the desired
+      temporary addresses, prefixes, as well as many options) and has the necessary
+      infrastructure to maintain such allocations (numerous server and client implementations, large deployed
+      relay infrastructure, and supportive solutions such as leasequery and failover),
+      it is a good candidate to address the desired
       functionality.</t>
       
       <t>While this document presents a design that should be usable for any
@@ -119,8 +119,8 @@
       other link-layer address types.</t>
 
       <t>The IEEE originally set aside half of the 48-bit MAC Address space for
-      local use (where the U/L bit is set to 1). In 2017, the IEEE specified an
-      optional specification (IEEE 802c) that divides this space into quadrants
+      local use (where the U/L bit is set to 1). In 2017, the IEEE published an
+      optional specification (<xref target="IEEEStd802c-2017"/>) that divides this space into quadrants
       (Standards Assigned Identifier, Extended Local Identifier,
       Administratively Assigned Identifier, and a Reserved quadrant) - more
       details are in <xref target="IEEE802cSummary"/>.</t>
@@ -147,21 +147,6 @@
 
       <t>
         <list hangIndent="14" style="hanging">
-          <t hangText="client">A device that is interested in obtaining link-layer
-          addresses. It implements the basic DHCP mechanisms needed by a DHCP
-          client as described in <xref target="RFC8415"/> and
-          supports the new options (IA_LL and LLADDR) specified in this
-          document. The client may or may not support IPv6 address assignment
-          and prefix delegation as specified in <xref target="RFC8415"/>.</t>
-
-          <t hangText="server">Software that manages link-layer address allocation
-          and is able to respond to client queries. It implements basic DHCP
-          server functionality as described in <xref target="RFC8415"/> and
-          supports the new options
-          (IA_LL and LLADDR) specified in this document. The server may or
-          may not support IPv6 address assignment and prefix delegation as
-          specified in <xref target="RFC8415"/>.</t>
-
           <t hangText="address">Unless specified otherwise, an address means a
           link-layer (or MAC) address, as defined in IEEE 802. The address is
           typically 6 octets long, but some network architectures may use
@@ -169,9 +154,36 @@
 
           <t hangText="address block">A number of consecutive link-layer
           addresses. An address block is expressed as a first address
-          plus a number that designates the number of additional (extra) addresses.
-          A single address can be represented by the address itself and zero
-          extra addresses.</t>
+          plus a number that designates the number of additional (extra)
+          addresses/ A single address can be represented by the address
+          itself and zero extra addresses.</t>
+
+          <t hangText="client">A node that is interested in obtaining
+          link-layer addresses. It implements the basic DHCP mechanisms
+          needed by a DHCP
+          client as described in <xref target="RFC8415"/> and
+          supports the new options (IA_LL and LLADDR, see below) specified
+          in this document. The client may or may not support IPv6
+          address assignment and prefix delegation as specified in
+          <xref target="RFC8415"/>.</t>
+
+          <t hangText="IA_LL">Identity Association for Link-Layer Address:
+          an identity association (IA) used to request or assign
+          link-layer addresses. See <xref target="IA_LL"/> for details on
+          the IA_LL option.</t>
+
+          <t hangText="LLADDR">Link-layer address option that is used to
+          request or assign a block of link-layer addresses. See
+          <xref target="LLADDR"/> for details on the LLADDR option.</t>
+
+          <t hangText="server">A node that manages link-layer address allocation
+          and is able to respond to client queries. It implements basic DHCP
+          server functionality as described in <xref target="RFC8415"/> and
+          supports the new options
+          (IA_LL and LLADDR) specified in this document. The server may or
+          may not support IPv6 address assignment and prefix delegation as
+          specified in <xref target="RFC8415"/>.</t>
+
         </list>
       </t>
 
@@ -187,26 +199,25 @@
 
         <t>This mode is used when an entity acts as a DHCP client and requests
         available DHCP servers to assign one or more addresses (an address block),
-        to be then assigned for use to the final end-devices. One relevant example of
-        scenario of application of this mode is large scale virtualization. In such
+        to be then assigned for use by the final end-devices. Large-scale virtualization is one application scenario for proxy client mode. In such
         environments the governing entity is often called a hypervisor and is frequently
         required to spawn new VMs. The hypervisor needs to assign new addresses to
         those machines. The hypervisor does not use those addresses for itself, but
         rather uses them to create new VMs with appropriate addresses. It is
         worth pointing out the cumulative nature of this scenario. Over time, the hypervisor
-        is likely to increase its addresses usage. Some obsolete VMs
+        is likely to increase its address usage. Some obsolete VMs
         will be deleted and their addresses will be eligible for reuse for new VMs.</t>
 
       </section>
 
       <section anchor="direct" title="Direct client mode scenario">
 
-        <t>This mode is used when an entity acts as a DHCP client and requests
+        <t>This mode can be used when an entity acts as a DHCP client and requests
         available DHCP servers to assign one or more addresses (an address block)
-        for its own use. This usage scenario is related to IoT (Internet of Things). With
+        for its use. This usage scenario is related to IoT (Internet of Things). With
         the emergence of IoT, a new class of cheap, sometimes short lived and
         disposable devices, has emerged. Examples may include various sensors
-        (e.g. medical) and actuators or controllable LED lights. Upon first boot,
+        (e.g. medical) and actuators. Upon first boot,
         the device uses a temporary address, as described in <xref
         target="IEEE-802.11-02-109r0"/>, to send initial DHCP packets to available
         DHCP servers. Then, such devices would typically request a single address for
@@ -218,6 +229,12 @@
         unique link-layer address on any of its interfaces MUST NOT use a
         link-layer based DUID (DHCP Unique Identifier), i.e., DUID-LLT or DUID-LL.
         For more details, refer to Section 11 of <xref target="RFC8415"/>.</t>
+
+        <t>Also, a client that operates as above may run into issues if
+        the switch it is connected to prohibits or restricts link-layer
+        address changes. This may limit where this capability can be used,
+        or may require the administrator to adjust the configuration of
+        the switch(es) to allow a change in address.</t>
 
       </section>
 
@@ -323,9 +340,7 @@
 
         <t>An administrator may make the address assignment permanent by specifying
         use of infinite lifetimes, as defined in Section 7.7 of <xref
-        target="RFC8415"/>. An administrator may also disable
-        the need for the renewal mechanism by setting the T1 and T2 values to
-        infinity.</t>
+        target="RFC8415"/>.</t>
 
         <t>Devices supporting this proposal MAY support the reconfigure mechanism,
         as defined in Section 18.2.11 of <xref target="RFC8415"/>.
@@ -333,8 +348,8 @@
         to immediately notify clients that the configuration has changed and triggers
         retrieval of relevant changes immediately, rather than after the T1 timer elapses.
         Since this mechanism requires implementation of Reconfigure Key Authentication
-        Protocol (See Section 20.4 of <xref target="RFC8415"/>), small
-        footprint devices may choose to not support it.</t>
+        Protocol (See Section 20.4 of <xref target="RFC8415"/>),
+        small-footprint devices may choose to not support it.</t>
 
       </section>
 
@@ -383,7 +398,7 @@
         </t>
       </list>
       A client sets the extra-addresses field to
-      either 0 for a single address or to the size of the requested
+      either 0 for a single address or the size of the requested
       address block minus 1.</t>
 
       <t>A client SHOULD set the valid-lifetime field to 0 (this field MUST be
@@ -410,7 +425,7 @@
       target="RFC8415"/>) with status set to NoAddrsAvail.</t>
 
       <t>The client MUST be able to handle an Advertise message containing a
-      smaller number of addresses, or an address or addresses different than those
+      smaller number of addresses, or an address or addresses different from those
       requested.</t>
 
       <t>The client waits for available servers to send Advertise responses and
@@ -430,7 +445,7 @@
       T1 and T2 timers using the values specified in the IA_LL option.</t>
 
       <t>The client MUST be able to handle a Reply message containing a smaller
-      number of addresses, or an address or addresses different than those
+      number of addresses, or an address or addresses different from those
       requested.</t>      
 
       <t>A client that has included a Rapid Commit option in the Solicit, may
@@ -773,7 +788,17 @@
       used by more than one device if not all parties on a link use
       this mechanism to obtain a link-layer address from the space
       assigned to the DHCP server. It is also possible that a bad actor
-      purposely uses a device's link-layer address.</t>
+      purposely uses a device's link-layer address to intercept that
+      device's traffic or as a denial of service (i.e., a switch may
+      believe the device has moved to a different port). Use of
+      link-layer security and encrypted communications can elivate these
+      issues.</t>
+
+	 <t>Server implementations SHOULD consider configuration options to
+      limit the maximum number of addresses to allocate (both in a single
+      request and in total) to a client. However, note that this does not
+      prevent a bad client actor from pretending to be many different
+      clients and consuming all available addresses.</t>
 
     </section>
 
@@ -799,7 +824,10 @@
       <t>Thanks to the DHC Working Group participants that reviewed this
       document, provided comments, and support. With special thanks to
       Ian Farrer for his thorough reviews and shepherding of this
-      document through the IETF process.</t>
+      document through the IETF process. Thanks also to area reviewers
+      Samita Chakrabarti, Roni Even and Tianran Zhou, and IESG members
+      Warren Kumari, Barry Leiba, and Eric Vyncke for their suggestions.
+      </t>
       
     </section>
 

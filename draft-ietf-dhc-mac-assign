@@ -94,7 +94,8 @@
       devices that need to be initialized. One of them is a scenario where
       virtual machines (VMs) are created on a massive scale. Typically the new VM
       instances are assigned a random link-layer (MAC) address, but that does
-      not scale well due to the birthday paradox. Another use case is IoT devices.
+      not scale well due to the birthday paradox. Another use case is IoT
+      (Internet of Things) devices (see <xref target="RFC7228"/>).
       The huge number of such devices would likely exhaust a vendor's OUI
       (Organizationally Unique Identifier) global address space, and while there
       is typically no need to provide global uniqueness for such devices, a
@@ -199,13 +200,14 @@
 
         <t>This mode is used when an entity acts as a DHCP client and requests
         available DHCP servers to assign one or more addresses (an address block),
-        to be then assigned for use by the final end-devices. Large-scale virtualization is one application scenario for proxy client mode. In such
+        to be then assigned for use by the final end-devices. Large-scale
+        virtualization is one application scenario for proxy client mode. In such
         environments the governing entity is often called a hypervisor and is frequently
         required to spawn new VMs. The hypervisor needs to assign new addresses to
         those machines. The hypervisor does not use those addresses for itself, but
         rather uses them to create new VMs with appropriate addresses. It is
-        worth pointing out the cumulative nature of this scenario. Over time, the hypervisor
-        is likely to increase its address usage. Some obsolete VMs
+        worth pointing out the cumulative nature of this scenario. Over time, the
+        hypervisor is likely to increase its address usage. Some obsolete VMs
         will be deleted and their addresses will be eligible for reuse for new VMs.</t>
 
       </section>
@@ -214,21 +216,22 @@
 
         <t>This mode can be used when an entity acts as a DHCP client and requests
         available DHCP servers to assign one or more addresses (an address block)
-        for its use. This usage scenario is related to IoT (Internet of Things). With
-        the emergence of IoT, a new class of cheap, sometimes short lived and
-        disposable devices, has emerged. Examples may include various sensors
-        (e.g. medical) and actuators. Upon first boot,
+        for its use. This usage scenario is related to IoT, as described earlier
+        (see <xref target="intro"/>). Upon first boot,
         the device uses a temporary address, as described in <xref
         target="IEEE-802.11-02-109r0"/>, to send initial DHCP packets to available
         DHCP servers. Then, such devices would typically request a single address for
         each available network interface, which typically means one address per
-        device. Once the server assigns a address, the device abandons its
+        device. Once the server assigns an address, the device abandons its
         temporary address and uses the assigned (leased) address.</t>
         
         <t>Note that a client that operates as above that does not have a globally
         unique link-layer address on any of its interfaces MUST NOT use a
-        link-layer based DUID (DHCP Unique Identifier), i.e., DUID-LLT or DUID-LL.
-        For more details, refer to Section 11 of <xref target="RFC8415"/>.</t>
+        link-layer based DUID (DHCP Unique Identifier), i.e., DUID-LLT or DUID-LL,
+        for its client identifier. As of this writing, this means such a device
+        MUST use a DUID-EN or DUID-UUID (though new DUID types may be defined in
+        the future). For more details, refer to Section 11 of
+        <xref target="RFC8415"/>.</t>
 
         <t>Also, a client that operates as above may run into issues if
         the switch it is connected to prohibits or restricts link-layer
@@ -525,19 +528,21 @@
       <figure align="center" anchor="ia-ll-syntax"
               title="IA_LL Option Format">
         <artwork align="left"><![CDATA[
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |          OPTION_IA_LL         |          option-len           |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                        IAID (4 octets)                        |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                          T1 (4 octets)                        |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                          T2 (4 octets)                        |
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   .                                                               .
-   .                         IA_LL-options                         .
-   .                                                               .
-   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |          OPTION_IA_LL         |          option-len           |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                        IAID (4 octets)                        |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                          T1 (4 octets)                        |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                          T2 (4 octets)                        |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  .                                                               .
+  .                         IA_LL-options                         .
+  .                                                               .
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
          ]]></artwork>
       </figure>
 
@@ -636,25 +641,25 @@
         <figure align="center" anchor="lladdr-syntax"
                 title="LLADDR Option Format">
           <artwork align="left"><![CDATA[
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|          OPTION_LLADDR        |          option-len           |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|       link-layer-type         |        link-layer-len         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-.                                                               .
-.                     link-layer-address                        .
-.                                                               .
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      extra-addresses                          |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      valid-lifetime                           |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-.                                                               .
-.                      LLaddr-options                           .
-.                                                               .
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |          OPTION_LLADDR        |          option-len           |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |       link-layer-type         |        link-layer-len         |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  .                                                               .
+  .                     link-layer-address                        .
+  .                                                               .
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                      extra-addresses                          |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  |                      valid-lifetime                           |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  .                                                               .
+  .                      LLaddr-options                           .
+  .                                                               .
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
           ]]></artwork>
         </figure>
 
@@ -780,21 +785,19 @@
 
     <section anchor="security" title="Security Considerations">
       
-      <t>See <xref target="RFC8415"/> for the DHCP
-      security considerations. See <xref target="RFC8200"/> for the
-      IPv6 security considerations.</t>
+      <t>See <xref target="RFC8415"/> and <xref target="RFC7227"/> for
+      the DHCP security considerations. See <xref target="RFC8200"/>
+      for the IPv6 security considerations.</t>
         
       <t>There is a possibility of the same link-layer address being
       used by more than one device if not all parties on a link use
-      this mechanism to obtain a link-layer address from the space
-      assigned to the DHCP server. It is also possible that a bad actor
-      purposely uses a device's link-layer address to intercept that
-      device's traffic or as a denial of service (i.e., a switch may
-      believe the device has moved to a different port). Use of
-      link-layer security and encrypted communications can elivate these
-      issues.</t>
+      this mechanism to obtain an address from the space assigned to
+      the DHCP server. Note that this issue would exist on these networks
+      even if DHCP were not used to obtain the address. See
+      <xref target="IEEE-802.11-02-109r0"/> for techniques that can
+      be used on 802.11 networks to probe for and avoid collisions.</t>
 
-	 <t>Server implementations SHOULD consider configuration options to
+      <t>Server implementations SHOULD consider configuration options to
       limit the maximum number of addresses to allocate (both in a single
       request and in total) to a client. However, note that this does not
       prevent a bad client actor from pretending to be many different
@@ -847,6 +850,8 @@
 
       <?rfc include='reference.RFC.2464'?>
       <?rfc include='reference.RFC.5494'?>
+      <?rfc include='reference.RFC.7227'?>
+      <?rfc include='reference.RFC.7228'?>
       <?rfc include='reference.RFC.7844'?>
       <?rfc include='reference.RFC.8200'?>
       

@@ -7,7 +7,7 @@
 <?rfc sortrefs="yes" ?>
 <?rfc compact="yes" ?>
 <?rfc subcompact="no" ?>
-<rfc category="std" docName="draft-ietf-dhc-mac-assign-08">
+<rfc category="std" docName="draft-ietf-dhc-mac-assign-09">
   <front>
     <title abbrev="DHCPv6 Link-Layer Address Assignment">
     Link-Layer Addresses Assignment Mechanism for DHCPv6</title>
@@ -467,6 +467,13 @@
       release. The Release transmission mechanism is described in Section
       18.2.7 of <xref target="RFC8415"/>.</t>
 
+      <t>Note: If the client is releasing the link-layer address it is
+      using, it MUST stop using this address before sending the
+      Release message (as per <xref target="RFC8415"/>). In order to send
+      the Release message, the client MUST use another address (such as
+      the one originally used to initiate DHCPv6 to provide an allocated
+      link-layer address).</t>
+
     </section>
 
     <section anchor="option" title="Option Definitions">
@@ -482,7 +489,7 @@
                title="Identity Association for Link-Layer Addresses Option">
 
    <t>The Identity Association for Link-Layer Addresses option (IA_LL
-   option) is used to carry an IA_LL option, the parameters
+   option) is used to carry an IA_LL, the parameters
    associated with the IA_LL, and the address blocks associated with
    the IA_LL.</t>
 
@@ -593,12 +600,18 @@
         and processes the remainder of the message as though the server
         had not included the invalid IA_LL option.</t>
 
+        <t>The IA_LL-options field typically contains one or more LLADDR
+        options (see <xref target="LLADDR"/>). If a client does not include
+        a LLADDR option in a Solicit or Request message, the server MUST
+        treat this as a request for a single address and that the
+        client has no hint as to the address it would like.</t>
+
       </section>
 
       <section anchor="LLADDR" title="Link-Layer Addresses Option">
 
    <t>The Link-Layer Addresses option is used to specify an address block
-   associated with a IA_LL. The option must be encapsulated in the
+   associated with an IA_LL. The option must be encapsulated in the
    IA_LL-options field of an IA_LL option.  The LLaddr-options fields
    encapsulates those options that are specific to this address block.</t>
 
@@ -711,8 +724,10 @@
       <t>For IEEE 802 MAC addresses (see <xref target="IEEEStd802"/> as amended by <xref target="IEEEStd802c"/>):
       <list hangIndent="4" style="hanging">
         <t hangText="1.">Server administrators SHOULD follow the IEEE 802
-        specifications with regards to the unicast address pools made
-        available for assignment (see <xref target="IEEEStd802c"/>).
+        Specifications with regards to the unicast address pools made
+        available for assignment (see <xref target="IEEE802cSummary"/> and
+        <xref target="IEEEStd802c"/>) -- only address space reserved for
+        local use or with the authorization of the assignee may be used.
         </t>
 
         <t hangText="2.">Servers MUST NOT allow administrators to
